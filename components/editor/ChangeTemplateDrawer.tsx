@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import TemplateGallery from "@/components/templates/TemplateGallery";
+import TemplateGallery from "../../templates/TemplateGallery";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function ChangeTemplateDrawer({ projectId }: { projectId: string }) {
