@@ -51,7 +51,7 @@ export default function ShapeTab({ layerId }: { layerId: string }) {
         <select
           className="mt-1 w-full rounded-xl border px-3 py-2 text-sm"
           value={layer.shadow ?? "none"}
-          onChange={(e) => updateLayer(layerId, { shadow: e.target.value })}
+          onChange={(e) => updateLayer(layerId, { shadow: e.target.value as "none" | "soft" | "medium" })}
         >
           <option value="none">None</option>
           <option value="soft">Soft</option>
