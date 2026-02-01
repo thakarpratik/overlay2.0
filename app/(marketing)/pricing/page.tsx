@@ -1,3 +1,5 @@
+import PageShell from "@/components/marketing/PageShell";
+
 export default function Page() {
   const tiers = [
     { name: "Free", price: "$0", bullets: ["Use templates", "Export PNG", "2:3 canvas"], cta: "Start free", primary: false },
@@ -6,17 +8,14 @@ export default function Page() {
   ];
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
-      <h1 className="text-3xl font-semibold tracking-tight">Pricing</h1>
-      <p className="mt-2 text-neutral-600">Simple tiers (placeholder). Hook to Stripe later.</p>
-
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <PageShell title="Pricing" subtitle="Placeholder tiers — wire to Stripe later." cta={{ label: "Open tool", href: "/tool" }}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {tiers.map((t) => (
           <div
             key={t.name}
             className={[
-              "rounded-2xl border bg-white p-6 shadow-sm",
-              t.primary ? "border-black ring-2 ring-black/10" : "border-neutral-200"
+              "rounded-2xl soft-border bg-white p-6 shadow-sm",
+              t.primary ? "border-black ring-2 ring-black/10" : ""
             ].join(" ")}
           >
             <div className="flex items-baseline justify-between">
@@ -30,8 +29,8 @@ export default function Page() {
             </ul>
             <button
               className={[
-                "mt-6 w-full rounded-xl px-4 py-2 text-sm",
-                t.primary ? "bg-black text-white" : "border bg-white"
+                "mt-6 w-full rounded-xl px-4 py-2 text-sm transition",
+                t.primary ? "bg-black text-white hover:opacity-90" : "border bg-white hover:bg-neutral-50"
               ].join(" ")}
             >
               {t.cta}
@@ -39,6 +38,6 @@ export default function Page() {
           </div>
         ))}
       </div>
-    </div>
+    </PageShell>
   );
 }

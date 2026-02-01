@@ -1,1 +1,8 @@
-{}
+{
+  "/(marketing)/page": "app/(marketing)/page.js",
+  "/(app)/tool/new/page": "app/(app)/tool/new/page.js",
+  "/(app)/tool/page": "app/(app)/tool/page.js",
+  "/(app)/tool/editor/[projectId]/page": "app/(app)/tool/editor/[projectId]/page.js",
+  "/(marketing)/features/page": "app/(marketing)/features/page.js",
+  "/(marketing)/pricing/page": "app/(marketing)/pricing/page.js"
+}
