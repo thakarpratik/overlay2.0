@@ -100,7 +100,7 @@ export default function TextTab({ layerId }: { layerId: string }) {
           <select
             className="mt-1 w-full rounded-xl border px-3 py-2 text-sm"
             value={layer.align}
-            onChange={(e) => updateLayer(layerId, { align: e.target.value })}
+            onChange={(e) => updateLayer(layerId, { align: e.target.value as "left" | "center" | "right" })}
           >
             <option value="left">Left</option>
             <option value="center">Center</option>
