@@ -547,30 +547,6 @@ function FinalCTA() {
 }
 
 /* ─────────────────────────────────────────────
-   FOOTER
-   ───────────────────────────────────────────── */
-function Footer() {
-  return (
-    <footer style={{ background: 'var(--clr-bg)', borderTop: '1px solid var(--clr-border)', padding: '32px 24px' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
-        <span style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 700, color: 'var(--clr-text)' }}>
-          overlay<span style={{ color: 'var(--clr-accent)' }}>.</span>
-        </span>
-        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-          {['About', 'Features', 'Pricing', 'Privacy', 'Terms', 'Contact'].map(link => (
-            <Link key={link} href={`/${link.toLowerCase()}`} style={{ fontSize: '0.75rem', color: 'var(--clr-muted)', textDecoration: 'none', transition: 'color 0.2s' }}
-              onMouseEnter={e => (e.target as HTMLElement).style.color = 'var(--clr-sub)'}
-              onMouseLeave={e => (e.target as HTMLElement).style.color = 'var(--clr-muted)'}
-            >{link}</Link>
-          ))}
-        </div>
-        <span style={{ fontSize: '0.7rem', color: 'var(--clr-muted)' }}>© 2026 overlay. All rights reserved.</span>
-      </div>
-    </footer>
-  )
-}
-
-/* ─────────────────────────────────────────────
    PAGE ROOT
    ───────────────────────────────────────────── */
 export default function HomePage() {
@@ -583,7 +559,6 @@ export default function HomePage() {
       <Showcase />
       <Features />
       <FinalCTA />
-      <Footer />
     </div>
   )
 }
