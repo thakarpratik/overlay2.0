@@ -1,6 +1,5 @@
 {
-  "/(app)/tool/page": "app/(app)/tool/page.js",
   "/(app)/tool/new/page": "app/(app)/tool/new/page.js",
-  "/(marketing)/page": "app/(marketing)/page.js",
-  "/(app)/tool/editor/[projectId]/page": "app/(app)/tool/editor/[projectId]/page.js"
+  "/(app)/tool/page": "app/(app)/tool/page.js",
+  "/(marketing)/page": "app/(marketing)/page.js"
 }

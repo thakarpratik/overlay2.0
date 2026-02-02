@@ -128,10 +128,11 @@ function StickyNav() {
     <nav className={`sticky-nav ${scrolled ? 'scrolled' : ''}`}>
       {/* Logo */}
       <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-        <div style={{ width: 32, height: 32, borderRadius: 10, background: 'linear-gradient(135deg, var(--clr-primary), #4f46e5)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.9rem', fontWeight: 700 }}>O</div>
-        <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.05rem', fontWeight: 700, color: 'var(--clr-text)', letterSpacing: '-0.02em' }}>
-          OverlayTool
-        </span>
+        <img 
+          src="/layerNow_Logo.svg" 
+          alt="OverlayTool" 
+          style={{ height: 44, width: 'auto' }}
+        />
       </Link>
 
       {/* Center nav links - hidden on mobile */}

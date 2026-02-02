@@ -13,9 +13,12 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b bg-white/75 backdrop-blur">
       <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-black text-white text-sm">O</span>
-          OverlayTool
+        <Link href="/" className="flex items-center gap-2">
+          <img 
+            src="/layerNow_Logo.svg" 
+            alt="OverlayTool" 
+            style={{ height: 40, width: 'auto' }}
+          />
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">

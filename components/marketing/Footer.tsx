@@ -16,14 +16,13 @@ export default function Footer() {
         flexWrap: 'wrap', 
         gap: 16 
       }}>
-        <span style={{ 
-          fontFamily: "'Playfair Display', Georgia, serif", 
-          fontSize: '1rem', 
-          fontWeight: 700, 
-          color: '#ffffff' 
-        }}>
-          OverlayTool
-        </span>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <img 
+            src="/layerNow_Logo.svg" 
+            alt="OverlayTool" 
+            style={{ height: 36, width: 'auto' }}
+          />
+        </Link>
         
         <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
           {['About', 'Features', 'Pricing', 'Privacy', 'Terms', 'Contact'].map(link => (

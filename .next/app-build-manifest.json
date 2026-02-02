@@ -21,20 +21,15 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(app)/tool/page.js"
     ],
-    "/(app)/tool/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(app)/tool/layout.js"
-    ],
     "/(app)/tool/new/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(app)/tool/new/page.js"
     ],
-    "/(app)/tool/editor/[projectId]/page": [
+    "/(app)/tool/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(app)/tool/editor/[projectId]/page.js"
+      "static/chunks/app/(app)/tool/layout.js"
     ]
   }
 }
