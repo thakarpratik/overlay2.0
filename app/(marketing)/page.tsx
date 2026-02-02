@@ -109,6 +109,7 @@ function useReveal(ref: React.RefObject<HTMLDivElement>, delay = 0) {
     )
     obs.observe(el)
     return () => obs.disconnect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [delay])
 }
 
@@ -381,7 +382,7 @@ function Showcase() {
           <div>
             <span style={{ fontSize: '0.7rem', color: 'var(--clr-pink)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Templates</span>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', fontWeight: 700, color: 'var(--clr-text)', marginTop: 8, letterSpacing: '-0.02em' }}>
-              Pick a category.<br /><span style={{ color: 'var(--clr-accent)', fontStyle: 'italic' }}>See what's possible.</span>
+              Pick a category.<br /><span style={{ color: 'var(--clr-accent)', fontStyle: 'italic' }}>See what&apos;s possible.</span>
             </h2>
           </div>
           <Link href="/tool" style={{ fontSize: '0.78rem', color: 'var(--clr-accent)', textDecoration: 'none', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
@@ -474,7 +475,7 @@ function Features() {
         <div style={{ marginBottom: 48 }}>
           <span style={{ fontSize: '0.7rem', color: 'var(--clr-accent)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Features</span>
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', fontWeight: 700, color: 'var(--clr-text)', marginTop: 8, letterSpacing: '-0.02em' }}>
-            Everything you need.<br /><span style={{ color: 'var(--clr-accent)', fontStyle: 'italic' }}>Nothing you don't.</span>
+            Everything you need.<br /><span style={{ color: 'var(--clr-accent)', fontStyle: 'italic' }}>Nothing you don&apos;t.</span>
           </h2>
         </div>
 
