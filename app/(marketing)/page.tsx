@@ -1,301 +1,588 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 /* ─────────────────────────────────────────────
-   Animated counter hook
+   DESIGN TOKENS (extracted from existing brand)
    ───────────────────────────────────────────── */
-function useCounter(target: number, duration = 1200) {
-  const [count, setCount] = useState(0)
+// Primary: #6366f1 (indigo)  Accent: #818cf8 (lighter indigo)
+// Pink: #ec4899  Green: #22c55e  Orange: #f97316
+// Bg dark: #0c0e14  Section: #0f1117  Card: rgba(30,32,42,0.55)
+// Text: #fff  Muted: #6b7280  Sub: #9ca3af
+// Font display: 'Playfair Display', Georgia, serif
+// Font body: system-ui (kept lean, no extra import needed)
+
+/* ─────────────────────────────────────────────
+   GLOBAL STYLES (injected once)
+   ───────────────────────────────────────────── */
+const GLOBAL_CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --clr-bg:        #0c0e14;
+    --clr-section:   #0f1117;
+    --clr-card:      rgba(30,32,42,0.55);
+    --clr-border:    rgba(255,255,255,0.07);
+    --clr-primary:   #6366f1;
+    --clr-accent:    #818cf8;
+    --clr-pink:      #ec4899;
+    --clr-green:     #22c55e;
+    --clr-text:      #ffffff;
+    --clr-muted:     #6b7280;
+    --clr-sub:       #9ca3af;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body:    system-ui, -apple-system, sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+  body { background: var(--clr-bg); color: var(--clr-text); font-family: var(--font-body); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+
+  /* ── Scroll-triggered reveal ── */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1); }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── Sticky nav ── */
+  .sticky-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between;
+    background: rgba(12,14,20,0); backdrop-filter: blur(0px); border-bottom: 1px solid transparent;
+    transition: background 0.4s, backdrop-filter 0.4s, border-color 0.4s; }
+  .sticky-nav.scrolled { background: rgba(12,14,20,0.82); backdrop-filter: blur(16px); border-color: var(--clr-border); }
+  
+  /* ── Nav responsive ── */
+  @media (min-width: 768px) {
+    .md-nav-links { display: flex !important; }
+    .new-project-btn { display: inline-flex !important; }
+  }
+
+  /* ── Ticker ── */
+  @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+  .ticker-track { display: flex; animation: ticker 28s linear infinite; }
+  .ticker-track:hover { animation-play-state: paused; }
+
+  /* ── Hero text animate-in ── */
+  @keyframes heroSlideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+  .hero-line { opacity: 0; animation: heroSlideUp 0.8s cubic-bezier(.4,0,.2,1) forwards; }
+  .hero-line:nth-child(1) { animation-delay: 0.1s; }
+  .hero-line:nth-child(2) { animation-delay: 0.25s; }
+  .hero-line:nth-child(3) { animation-delay: 0.4s; }
+  .hero-line:nth-child(4) { animation-delay: 0.55s; }
+
+  /* ── Text overlay shimmer ── */
+  @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+  .shimmer-text {
+    background: linear-gradient(90deg, #fff 0%, #818cf8 40%, #fff 60%, #fff 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s linear infinite;
+  }
+
+  /* ── Feature icon glow on hover ── */
+  .feature-card { transition: border-color 0.3s, transform 0.3s; }
+  .feature-card:hover { border-color: rgba(99,102,241,0.35); transform: translateY(-2px); }
+  .feature-icon { transition: box-shadow 0.3s; }
+  .feature-card:hover .feature-icon { box-shadow: 0 0 20px rgba(99,102,241,0.3); }
+
+  /* ── CTA button glow ── */
+  .cta-btn { transition: box-shadow 0.3s, transform 0.2s; }
+  .cta-btn:hover { box-shadow: 0 6px 32px rgba(99,102,241,0.5); transform: translateY(-1px); }
+  .cta-btn:active { transform: translateY(0); }
+`
+
+function GlobalStyles() {
+  return <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
+}
+
+/* ─────────────────────────────────────────────
+   SCROLL REVEAL HOOK
+   ───────────────────────────────────────────── */
+function useReveal(ref: React.RefObject<HTMLDivElement>, delay = 0) {
   useEffect(() => {
-    const start = performance.now()
-    const tick = (now: number) => {
-      const progress = Math.min((now - start) / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setCount(Math.round(eased * target))
-      if (progress < 1) requestAnimationFrame(tick)
-    }
-    requestAnimationFrame(tick)
-  }, [target, duration])
-  return count
+    const el = ref.current
+    if (!el) return
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setTimeout(() => el.classList.add('visible'), delay); obs.disconnect() } },
+      { threshold: 0.15 }
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [delay])
 }
 
 /* ─────────────────────────────────────────────
-   Stat pill
+   STICKY NAV
    ───────────────────────────────────────────── */
-function StatPill({ value, unit, label }: { value: number; unit: string; label: string }) {
-  const num = useCounter(value)
+function StickyNav() {
+  const [scrolled, setScrolled] = useState(false)
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 80)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
-    <div className="flex flex-col items-center">
-      <span className="text-3xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-        {num}<span style={{ color: '#818cf8' }}>{unit}</span>
-      </span>
-      <span className="text-xs uppercase tracking-widest mt-1" style={{ color: '#6b7280' }}>{label}</span>
-    </div>
-  )
-}
+    <nav className={`sticky-nav ${scrolled ? 'scrolled' : ''}`}>
+      {/* Logo */}
+      <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+        <div style={{ width: 32, height: 32, borderRadius: 10, background: 'linear-gradient(135deg, var(--clr-primary), #4f46e5)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.9rem', fontWeight: 700 }}>O</div>
+        <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.05rem', fontWeight: 700, color: 'var(--clr-text)', letterSpacing: '-0.02em' }}>
+          OverlayTool
+        </span>
+      </Link>
 
-/* ─────────────────────────────────────────────
-   Feature card
-   ───────────────────────────────────────────── */
-function Feature({ title, desc, icon }: { title: string; desc: string; icon: React.ReactNode }) {
-  return (
-    <div className="group relative rounded-2xl p-5 cursor-default"
-      style={{ background: 'rgba(30,32,42,0.55)', border: '1px solid rgba(255,255,255,0.07)', backdropFilter: 'blur(14px)' }}>
-      <div className="absolute top-0 left-6 right-6 h-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        style={{ background: 'linear-gradient(90deg,#6366f1,#ec4899,#22c55e)' }} />
-      <div className="flex items-start gap-3">
-        <div className="mt-0.5 flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center"
-          style={{ background: 'rgba(99,102,241,0.12)', color: '#818cf8' }}>
-          {icon}
-        </div>
-        <div>
-          <h3 className="font-semibold text-sm text-white tracking-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{title}</h3>
-          <p className="mt-1 text-xs leading-relaxed" style={{ color: '#9ca3af' }}>{desc}</p>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/* ─────────────────────────────────────────────
-   Benefits data
-   ───────────────────────────────────────────── */
-const BENEFITS = [
-  {
-    num: '01', title: 'Stop the scroll',
-    desc: 'Bold text on eye-catching images grabs attention instantly. Overlaid text makes your content stand out in the first 200ms.',
-    icon: (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>),
-  },
-  {
-    num: '02', title: 'Communicate instantly',
-    desc: 'A quote, a price, a headline — text overlays deliver the core message before anyone clicks. No caption needed.',
-    icon: (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>),
-  },
-  {
-    num: '03', title: 'Build brand recognition',
-    desc: 'Consistent fonts, colours, and layouts trains your audience to recognise your brand at a glance — no logo required.',
-    icon: (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>),
-  },
-  {
-    num: '04', title: 'Boost engagement & saves',
-    desc: 'Posts with text overlays get saved and shared more — people bookmark useful quotes, recipes, and tips.',
-    icon: (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>),
-  },
-  {
-    num: '05', title: 'Works on every platform',
-    desc: 'Pinterest, Instagram, blogs, email — text over image performs well everywhere without platform-specific tricks.',
-    icon: (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>),
-  },
-  {
-    num: '06', title: 'Save hours every week',
-    desc: 'Templates and brand kits let you go from idea to polished post in under a minute — not 20 minutes in a bloated editor.',
-    icon: (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>),
-  },
-]
-
-/* ─────────────────────────────────────────────
-   Gallery data + card
-   ───────────────────────────────────────────── */
-const GALLERY_ITEMS = [
-  { bg: 'linear-gradient(145deg, #f97316 0%, #dc2626 50%, #991b1b 100%)', text: 'The Perfect\nGranola Recipe', sub: '5 ingredients · 20 min', accent: 'rgba(255,255,255,0.15)' },
-  { bg: 'linear-gradient(160deg, #0d9488 0%, #0f766e 40%, #134e4a 100%)', text: '"Start before\nyou feel ready."', sub: '— Daily Motivation', accent: 'rgba(255,255,255,0.1)' },
-  { bg: 'linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #c4b5fd 100%)', text: 'Top 5 Hidden\nGems in Bali', sub: 'Travel · Indonesia', accent: 'rgba(255,255,255,0.12)' },
-  { bg: 'linear-gradient(170deg, #1e293b 0%, #0f172a 100%)', text: 'NEW\nCollection', sub: 'Spring 2026 · Shop Now', accent: 'rgba(99,102,241,0.3)' },
-  { bg: 'linear-gradient(150deg, #fb7185 0%, #e11d48 60%, #be123c 100%)', text: '10 Morning\nHabits That\nChange Everything', sub: 'Wellness · Lifestyle', accent: 'rgba(255,255,255,0.12)' },
-  { bg: 'linear-gradient(140deg, #16a34a 0%, #166534 50%, #14532d 100%)', text: 'Easy Meal\nPrep Guide', sub: '7 days · Under $50', accent: 'rgba(255,255,255,0.1)' },
-]
-
-function GalleryCard({ item }: { item: typeof GALLERY_ITEMS[0] }) {
-  const [hovered, setHovered] = useState(false)
-  const lines = item.text.split('\n')
-  return (
-    <div className="relative rounded-2xl overflow-hidden cursor-pointer"
-      style={{
-        aspectRatio: '2/3', background: item.bg,
-        transform: hovered ? 'scale(1.03)' : 'scale(1)',
-        transition: 'transform 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s',
-        boxShadow: hovered ? '0 20px 40px rgba(0,0,0,0.4)' : '0 4px 12px rgba(0,0,0,0.25)',
-      }}
-      onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
-      <div className="absolute bottom-0 left-0 right-0 rounded-b-2xl pointer-events-none" style={{ height: '55%', background: item.accent }} />
-      <div className="absolute rounded-full pointer-events-none" style={{ width: '120px', height: '120px', top: '-30px', right: '-30px', background: 'rgba(255,255,255,0.06)' }} />
-      <div className="absolute inset-0 flex flex-col justify-end p-5">
-        {lines.map((line, i) => (
-          <div key={i} className="font-bold leading-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: lines.length > 2 ? '1.15rem' : '1.4rem', color: '#fff', textShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>{line}</div>
+      {/* Center nav links - hidden on mobile */}
+      <div style={{ display: 'none', gap: 4, position: 'absolute', left: '50%', transform: 'translateX(-50%)' }} className="md-nav-links">
+        {[
+          { label: 'Templates', href: '/templates' },
+          { label: 'Features', href: '/features' },
+          { label: 'Pricing', href: '/pricing' },
+        ].map(link => (
+          <Link key={link.href} href={link.href} style={{
+            padding: '6px 14px', borderRadius: 8, fontSize: '0.82rem', fontWeight: 500,
+            color: 'var(--clr-sub)', textDecoration: 'none', transition: 'background 0.2s, color 0.2s'
+          }}
+            onMouseEnter={e => { (e.target as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; (e.target as HTMLElement).style.color = 'var(--clr-text)' }}
+            onMouseLeave={e => { (e.target as HTMLElement).style.background = 'transparent'; (e.target as HTMLElement).style.color = 'var(--clr-sub)' }}
+          >
+            {link.label}
+          </Link>
         ))}
-        <div className="mt-2 text-xs font-medium" style={{ color: 'rgba(255,255,255,0.7)', letterSpacing: '0.04em' }}>{item.sub}</div>
       </div>
-      <div className="absolute top-3 right-3 rounded-full px-2.5 py-1 text-xs font-semibold"
-        style={{ background: 'rgba(0,0,0,0.45)', color: '#fff', opacity: hovered ? 1 : 0, transition: 'opacity 0.3s', backdropFilter: 'blur(6px)' }}>
-        Use this style →
+
+      {/* Right CTAs */}
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <Link href="/tool/new" className="new-project-btn" style={{
+          display: 'none',
+          padding: '7px 16px', borderRadius: 10, fontSize: '0.8rem', fontWeight: 500,
+          color: 'var(--clr-text)', textDecoration: 'none', border: '1px solid var(--clr-border)',
+          background: 'rgba(255,255,255,0.03)', transition: 'background 0.2s'
+        }}
+          onMouseEnter={e => (e.target as HTMLElement).style.background = 'rgba(255,255,255,0.06)'}
+          onMouseLeave={e => (e.target as HTMLElement).style.background = 'rgba(255,255,255,0.03)'}
+        >
+          New project
+        </Link>
+        <Link href="/tool" className="cta-btn" style={{
+          display: 'inline-flex',
+          alignItems: 'center', gap: '6px', background: 'linear-gradient(135deg, var(--clr-primary), #4f46e5)',
+          color: '#fff', fontSize: '0.8rem', fontWeight: 600, padding: '8px 18px', borderRadius: 10,
+          textDecoration: 'none', boxShadow: '0 4px 20px rgba(99,102,241,0.3)'
+        }}>
+          Open Tool
+        </Link>
       </div>
-    </div>
+    </nav>
   )
 }
 
 /* ─────────────────────────────────────────────
-   Icons
+   HERO SECTION
    ───────────────────────────────────────────── */
-const IconResize = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>)
-const IconType = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>)
-const IconShield = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>)
-
-/* ─────────────────────────────────────────────
-   Section label reusable
-   ───────────────────────────────────────────── */
-function SectionLabel({ color, children }: { color: string; children: string }) {
+function Hero() {
   return (
-    <div className="flex items-center gap-3 mb-3">
-      <div className="h-px w-6" style={{ background: color }} />
-      <span className="text-xs font-semibold tracking-widest uppercase" style={{ color }}>{children}</span>
+    <section style={{
+      minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+      background: 'var(--clr-bg)', position: 'relative', overflow: 'hidden', paddingTop: 100, paddingBottom: 80
+    }}>
+      {/* Ambient gradient blobs */}
+      <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '60%', height: '60%', background: 'radial-gradient(ellipse, rgba(99,102,241,0.12) 0%, transparent 70%)', pointerEvents: 'none', filter: 'blur(40px)' }} />
+      <div style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '45%', height: '45%', background: 'radial-gradient(ellipse, rgba(236,72,153,0.07) 0%, transparent 70%)', pointerEvents: 'none', filter: 'blur(50px)' }} />
+
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', width: '100%', textAlign: 'center' }}>
+
+        {/* Centered Headline */}
+        <h1 className="hero-line" style={{ 
+          fontFamily: 'var(--font-display)', 
+          fontSize: 'clamp(3rem, 7vw, 6rem)', 
+          lineHeight: 1.05, 
+          fontWeight: 700, 
+          color: 'var(--clr-text)', 
+          letterSpacing: '-0.03em',
+          marginBottom: 60
+        }}>
+          Put <span className="shimmer-text">words</span> on images.
+        </h1>
+
+        {/* Video Frame */}
+        <div className="hero-line preview-pulse" style={{
+          maxWidth: 900,
+          margin: '0 auto',
+          borderRadius: 20,
+          overflow: 'hidden',
+          boxShadow: '0 24px 60px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.1)',
+          background: 'var(--clr-card)',
+          border: '1px solid var(--clr-border)',
+          position: 'relative'
+        }}>
+          <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+            <iframe
+              src="https://www.youtube.com/embed/I6-xzqbRqzI?si=NWTo9jMPxf1t2_QD&controls=0&autoplay=1&mute=1&loop=1&playlist=I6-xzqbRqzI"
+              title="OverlayTool Demo"
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                border: 'none'
+              }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            />
+          </div>
+        </div>
+
+        {/* CTAs */}
+        <div className="hero-line" style={{ marginTop: 48, display: 'flex', gap: 12, alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Link href="/tool" className="cta-btn" style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg, var(--clr-primary), #4f46e5)',
+            color: '#fff', fontSize: '0.95rem', fontWeight: 600, padding: '14px 32px', borderRadius: 999,
+            textDecoration: 'none', boxShadow: '0 4px 24px rgba(99,102,241,0.35)'
+          }}>
+            Start creating free
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 8h10M9 4l4 4-4 4" /></svg>
+          </Link>
+          <Link href="#showcase" style={{
+            fontSize: '0.85rem', color: 'var(--clr-sub)', textDecoration: 'none', fontWeight: 500,
+            display: 'inline-flex', alignItems: 'center', gap: 4, transition: 'color 0.2s'
+          }}>
+            See examples <span style={{ fontSize: '0.7rem' }}>↓</span>
+          </Link>
+        </div>
+
+        {/* Trust badges */}
+        <div className="hero-line" style={{ marginTop: 48, display: 'flex', gap: 32, alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>
+          {[
+            { val: '0', label: 'tracking' },
+            { val: '3s', label: 'avg export' },
+            { val: '∞', label: 'exports' },
+          ].map(s => (
+            <div key={s.label} style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', fontWeight: 700, color: 'var(--clr-accent)' }}>{s.val}</span>
+              <span style={{ fontSize: '0.7rem', color: 'var(--clr-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{s.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ─────────────────────────────────────────────
+   SOCIAL PROOF TICKER
+   ───────────────────────────────────────────── */
+const PROOF_ITEMS = [
+  { text: 'Pinterest creators', icon: '📌' },
+  { text: 'Recipe blogs', icon: '🍳' },
+  { text: 'Instagram posts', icon: '📸' },
+  { text: 'Motivational quotes', icon: '✨' },
+  { text: 'Product launches', icon: '🚀' },
+  { text: 'Travel content', icon: '✈️' },
+  { text: 'Email newsletters', icon: '📧' },
+  { text: 'YouTube thumbnails', icon: '▶️' },
+]
+
+function Ticker() {
+  const doubled = [...PROOF_ITEMS, ...PROOF_ITEMS]
+  return (
+    <div style={{ overflow: 'hidden', padding: '28px 0', borderTop: '1px solid var(--clr-border)', borderBottom: '1px solid var(--clr-border)', background: 'var(--clr-section)' }}>
+      <div className="ticker-track" style={{ display: 'flex', whiteSpace: 'nowrap' }}>
+        {doubled.map((item, i) => (
+          <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '0 40px', flexShrink: 0 }}>
+            <span style={{ fontSize: '1.1rem' }}>{item.icon}</span>
+            <span style={{ fontSize: '0.82rem', color: 'var(--clr-sub)', fontWeight: 500, letterSpacing: '0.02em' }}>{item.text}</span>
+            <span style={{ color: 'var(--clr-border)', fontSize: '0.5rem' }}>●</span>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
 
 /* ─────────────────────────────────────────────
-   Homepage
+   INTERACTIVE TEMPLATE SHOWCASE
+   ───────────────────────────────────────────── */
+const CATEGORIES = [
+  {
+    label: 'Recipes', icon: '🍳',
+    items: [
+      { bg: 'linear-gradient(145deg, #f97316, #dc2626 50%, #991b1b)', title: 'The Perfect\nGranola Recipe', sub: '5 ingredients · 20 min' },
+      { bg: 'linear-gradient(140deg, #ea580c, #c2410c 60%, #9a3412)', title: 'Overnight\nOats', sub: '3 min · Make ahead' },
+      { bg: 'linear-gradient(155deg, #ca8a04, #a16207 50%, #854d0e)', title: 'Honey Lemon\nDressing', sub: 'Homemade · 2 min' },
+    ]
+  },
+  {
+    label: 'Quotes', icon: '✨',
+    items: [
+      { bg: 'linear-gradient(160deg, #0d9488, #0f766e 40%, #134e4a)', title: '"Start before\nyou feel ready."', sub: '— Daily Motivation' },
+      { bg: 'linear-gradient(150deg, #7c3aed, #6d28d9 50%, #4c1d95)', title: '"Do what you\ncan, with what\nyou have."', sub: '— T. Roosevelt' },
+      { bg: 'linear-gradient(165deg, #1e40af, #1e3a8a 50%, #1e293b)', title: '"The only way\nis through."', sub: '— Robert Frost' },
+    ]
+  },
+  {
+    label: 'Travel', icon: '✈️',
+    items: [
+      { bg: 'linear-gradient(135deg, #7c3aed, #a78bfa 50%, #c4b5fd)', title: 'Top 5 Hidden\nGems in Bali', sub: 'Travel · Indonesia' },
+      { bg: 'linear-gradient(140deg, #0891b2, #0e7490 50%, #155e75)', title: 'Tokyo in\n48 Hours', sub: 'Japan · Budget trip' },
+      { bg: 'linear-gradient(150deg, #059669, #047857 50%, #065f46)', title: 'Amalfi Coast\nGuide', sub: 'Italy · Summer 2026' },
+    ]
+  },
+  {
+    label: 'Products', icon: '🚀',
+    items: [
+      { bg: 'linear-gradient(170deg, #1e293b, #0f172a)', title: 'NEW\nCollection', sub: 'Spring 2026 · Shop Now' },
+      { bg: 'linear-gradient(155deg, #6366f1, #4f46e5 50%, #4338ca)', title: '50% OFF\nSummer Sale', sub: 'Limited time · Act now' },
+      { bg: 'linear-gradient(145deg, #ec4899, #db2777 50%, #be185d)', title: 'Just\nDropped', sub: 'New arrivals · Shop' },
+    ]
+  },
+]
+
+function ShowcaseCard({ item, delay }: { item: { bg: string; title: string; sub: string }; delay: number }) {
+  const ref = useRef<HTMLDivElement>(null!)
+  useReveal(ref, delay)
+  const lines = item.title.split('\n')
+
+  return (
+    <div ref={ref} className="reveal" style={{
+      aspectRatio: '3/4', borderRadius: 18, background: item.bg, position: 'relative', overflow: 'hidden',
+      cursor: 'pointer', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', transition: 'transform 0.35s cubic-bezier(.4,0,.2,1), box-shadow 0.35s'
+    }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1.04)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 20px 48px rgba(0,0,0,0.45)' }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(0,0,0,0.3)' }}
+    >
+      <div style={{ position: 'absolute', width: 100, height: 100, borderRadius: '50%', top: -25, right: -25, background: 'rgba(255,255,255,0.06)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '55%', background: 'linear-gradient(to top, rgba(0,0,0,0.5), transparent)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '22px 20px' }}>
+        {lines.map((line, i) => (
+          <div key={i} style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: lines.length > 2 ? '1rem' : '1.2rem', color: '#fff', lineHeight: 1.2, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>{line}</div>
+        ))}
+        <div style={{ marginTop: 8, fontSize: '0.65rem', color: 'rgba(255,255,255,0.55)', fontWeight: 500, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{item.sub}</div>
+      </div>
+    </div>
+  )
+}
+
+function Showcase() {
+  const [activeIdx, setActiveIdx] = useState(0)
+  const ref = useRef<HTMLDivElement>(null!)
+  useReveal(ref)
+
+  return (
+    <section id="showcase" ref={ref} className="reveal" style={{ background: 'var(--clr-section)', padding: '100px 0 90px', position: 'relative' }}>
+      <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '75%', height: 1, background: 'linear-gradient(90deg, transparent, var(--clr-border), transparent)' }} />
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 40 }}>
+          <div>
+            <span style={{ fontSize: '0.7rem', color: 'var(--clr-pink)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Templates</span>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', fontWeight: 700, color: 'var(--clr-text)', marginTop: 8, letterSpacing: '-0.02em' }}>
+              Pick a category.<br /><span style={{ color: 'var(--clr-accent)', fontStyle: 'italic' }}>See what's possible.</span>
+            </h2>
+          </div>
+          <Link href="/tool" style={{ fontSize: '0.78rem', color: 'var(--clr-accent)', textDecoration: 'none', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            Browse all templates <span>→</span>
+          </Link>
+        </div>
+
+        {/* Category pills */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 36, flexWrap: 'wrap' }}>
+          {CATEGORIES.map((cat, i) => (
+            <button key={cat.label} onClick={() => setActiveIdx(i)} style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 999, border: 'none', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600,
+              background: i === activeIdx ? 'linear-gradient(135deg, var(--clr-primary), #4f46e5)' : 'rgba(30,32,42,0.6)',
+              color: i === activeIdx ? '#fff' : 'var(--clr-sub)',
+              boxShadow: i === activeIdx ? '0 4px 16px rgba(99,102,241,0.3)' : 'none',
+              border: i === activeIdx ? 'none' : '1px solid var(--clr-border)',
+              transition: 'all 0.25s ease'
+            }}>
+              <span>{cat.icon}</span> {cat.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Cards grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 20, maxWidth: 820 }}>
+          {CATEGORIES[activeIdx].items.map((item, i) => (
+            <ShowcaseCard key={`${activeIdx}-${i}`} item={item} delay={i * 80} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ─────────────────────────────────────────────
+   FEATURES SECTION
+   ───────────────────────────────────────────── */
+const FEATURES = [
+  {
+    title: 'Fluid resizing',
+    desc: 'Drag, stretch, and squeeze overlays freely on all sides with pixel-perfect precision.',
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+        <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+      </svg>
+    ),
+    color: 'var(--clr-primary)'
+  },
+  {
+    title: 'Full font control',
+    desc: 'Choose from hundreds of fonts. Fine-tune size, weight, alignment, and letter spacing.',
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/>
+      </svg>
+    ),
+    color: 'var(--clr-pink)'
+  },
+  {
+    title: 'Zero tracking',
+    desc: 'No telemetry. No cookies. No sign-up. Everything runs locally in your browser.',
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+    ),
+    color: 'var(--clr-green)'
+  },
+  {
+    title: 'Instant export',
+    desc: 'One click to download. PNG output ready for any platform — no compression, no quality loss.',
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+    ),
+    color: '#f59e0b'
+  },
+]
+
+function Features() {
+  const ref = useRef<HTMLDivElement>(null!)
+  useReveal(ref)
+
+  return (
+    <section ref={ref} className="reveal" style={{ background: 'var(--clr-bg)', padding: '100px 0 90px', position: 'relative' }}>
+      <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '75%', height: 1, background: 'linear-gradient(90deg, transparent, var(--clr-border), transparent)' }} />
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+        <div style={{ marginBottom: 48 }}>
+          <span style={{ fontSize: '0.7rem', color: 'var(--clr-accent)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Features</span>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', fontWeight: 700, color: 'var(--clr-text)', marginTop: 8, letterSpacing: '-0.02em' }}>
+            Everything you need.<br /><span style={{ color: 'var(--clr-accent)', fontStyle: 'italic' }}>Nothing you don't.</span>
+          </h2>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 18 }}>
+          {FEATURES.map((f, i) => (
+            <FeatureCard key={f.title} feature={f} delay={i * 100} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function FeatureCard({ feature, delay }: { feature: typeof FEATURES[0]; delay: number }) {
+  const ref = useRef<HTMLDivElement>(null!)
+  useReveal(ref, delay)
+
+  return (
+    <div ref={ref} className="reveal feature-card" style={{
+      background: 'var(--clr-card)', border: '1px solid var(--clr-border)', borderRadius: 18,
+      padding: '28px 24px', backdropFilter: 'blur(14px)'
+    }}>
+      <div className="feature-icon" style={{
+        width: 48, height: 48, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: `${feature.color}15`, color: feature.color, marginBottom: 18, transition: 'box-shadow 0.3s'
+      }}>
+        {feature.icon}
+      </div>
+      <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 700, color: 'var(--clr-text)', marginBottom: 8 }}>{feature.title}</h3>
+      <p style={{ fontSize: '0.8rem', color: 'var(--clr-muted)', lineHeight: 1.6 }}>{feature.desc}</p>
+    </div>
+  )
+}
+
+/* ─────────────────────────────────────────────
+   FINAL CTA SECTION
+   ───────────────────────────────────────────── */
+function FinalCTA() {
+  const ref = useRef<HTMLDivElement>(null!)
+  useReveal(ref)
+
+  return (
+    <section ref={ref} className="reveal" style={{ background: 'var(--clr-section)', padding: '90px 0 100px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '75%', height: 1, background: 'linear-gradient(90deg, transparent, var(--clr-border), transparent)' }} />
+      {/* Glow blob */}
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '70%', height: '80%', background: 'radial-gradient(ellipse, rgba(99,102,241,0.08) 0%, transparent 70%)', pointerEvents: 'none', filter: 'blur(30px)' }} />
+
+      <div style={{ maxWidth: 700, margin: '0 auto', padding: '0 24px', textAlign: 'center', position: 'relative' }}>
+        <span style={{ fontSize: '0.7rem', color: 'var(--clr-green)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Ready?</span>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', fontWeight: 700, color: 'var(--clr-text)', marginTop: 12, lineHeight: 1.2, letterSpacing: '-0.02em' }}>
+          Create your first overlay<br /><span style={{ color: 'var(--clr-accent)', fontStyle: 'italic' }}>in under a minute.</span>
+        </h2>
+        <p style={{ marginTop: 16, fontSize: '0.9rem', color: 'var(--clr-muted)', maxWidth: 440, margin: '16px auto 0' }}>
+          No account. No credit card. No bloated editor. Just open and start.
+        </p>
+        <Link href="/tool" className="cta-btn" style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 36,
+          background: 'linear-gradient(135deg, var(--clr-primary), #4f46e5)',
+          color: '#fff', fontSize: '0.95rem', fontWeight: 600, padding: '14px 34px', borderRadius: 999,
+          textDecoration: 'none', boxShadow: '0 4px 28px rgba(99,102,241,0.4)'
+        }}>
+          Open the editor for free
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 8h10M9 4l4 4-4 4" /></svg>
+        </Link>
+        <p style={{ marginTop: 18, fontSize: '0.7rem', color: 'var(--clr-muted)' }}>Works in any browser · Exports in 3 seconds</p>
+      </div>
+    </section>
+  )
+}
+
+/* ─────────────────────────────────────────────
+   FOOTER
+   ───────────────────────────────────────────── */
+function Footer() {
+  return (
+    <footer style={{ background: 'var(--clr-bg)', borderTop: '1px solid var(--clr-border)', padding: '32px 24px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+        <span style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 700, color: 'var(--clr-text)' }}>
+          overlay<span style={{ color: 'var(--clr-accent)' }}>.</span>
+        </span>
+        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+          {['About', 'Features', 'Pricing', 'Privacy', 'Terms', 'Contact'].map(link => (
+            <Link key={link} href={`/${link.toLowerCase()}`} style={{ fontSize: '0.75rem', color: 'var(--clr-muted)', textDecoration: 'none', transition: 'color 0.2s' }}
+              onMouseEnter={e => (e.target as HTMLElement).style.color = 'var(--clr-sub)'}
+              onMouseLeave={e => (e.target as HTMLElement).style.color = 'var(--clr-muted)'}
+            >{link}</Link>
+          ))}
+        </div>
+        <span style={{ fontSize: '0.7rem', color: 'var(--clr-muted)' }}>© 2026 overlay. All rights reserved.</span>
+      </div>
+    </footer>
+  )
+}
+
+/* ─────────────────────────────────────────────
+   PAGE ROOT
    ───────────────────────────────────────────── */
 export default function HomePage() {
   return (
-    <div className="relative" style={{ background: '#0f1117' }}>
-
-      {/* ══════ HERO ══════ */}
-      <section className="relative overflow-hidden" style={{ background: '#0f1117', paddingTop: '80px', paddingBottom: '56px' }}>
-        <div className="aurora -z-10" style={{
-          background: [
-            'radial-gradient(circle at 18% 22%, rgba(99,102,241,0.45), transparent 52%)',
-            'radial-gradient(circle at 78% 28%, rgba(236,72,153,0.32), transparent 55%)',
-            'radial-gradient(circle at 58% 75%, rgba(34,197,94,0.26), transparent 56%)',
-            'radial-gradient(circle at 28% 68%, rgba(14,165,233,0.30), transparent 56%)',
-          ].join(', ')
-        }} />
-        <div className="grain -z-10" style={{ opacity: 0.06 }} />
-        <div className="absolute rounded-full pointer-events-none" style={{ width: '520px', height: '520px', top: '-12%', right: '-10%', background: 'radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%)', filter: 'blur(40px)' }} />
-        <div className="absolute rounded-full pointer-events-none" style={{ width: '360px', height: '360px', bottom: '8%', left: '-8%', background: 'radial-gradient(circle, rgba(236,72,153,0.14) 0%, transparent 70%)', filter: 'blur(32px)' }} />
-
-        <div className="mx-auto max-w-6xl px-6 relative">
-          <h1 className="leading-none tracking-tight text-white"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 'clamp(3rem, 7vw, 5.5rem)', maxWidth: '780px' }}>
-            Image Overlay Tool
-            <br /><span className="italic" style={{ color: '#818cf8' }}>Built for Creators</span>
-          </h1>
-
-          <p className="mt-4 text-lg max-w-xl leading-relaxed" style={{ color: '#9ca3af' }}>
-            A fast, privacy-first overlay editor built for creators who publish daily — no bloat, no tracking, no compromise.
-          </p>
-
-          <div className="mt-6 flex flex-wrap gap-3 items-center">
-            <Link href="/tool"
-              className="group inline-flex items-center gap-2 rounded-full text-white text-sm font-semibold px-7 py-3 transition-all duration-300"
-              style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', boxShadow: '0 4px 24px rgba(99,102,241,0.35)' }}>
-              Open Tool
-              <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 8h10M9 4l4 4-4 4" /></svg>
-            </Link>
-            <Link href="#why"
-              className="inline-flex items-center rounded-full text-sm font-medium px-6 py-3 transition-all duration-200"
-              style={{ border: '1px solid rgba(255,255,255,0.12)', color: '#d1d5db', background: 'rgba(255,255,255,0.04)' }}>
-              Learn more
-            </Link>
-          </div>
-
-          <div className="mt-8" style={{ maxWidth: '380px' }}>
-            <div className="flex justify-between gap-6 rounded-xl px-5 py-4"
-              style={{ background: 'rgba(20,22,30,0.7)', border: '1px solid rgba(255,255,255,0.06)', backdropFilter: 'blur(12px)' }}>
-              <StatPill value={3} unit="s" label="Avg export" />
-              <div className="w-px" style={{ background: 'rgba(255,255,255,0.08)' }} />
-              <StatPill value={0} unit="KB" label="Tracking" />
-              <div className="w-px" style={{ background: 'rgba(255,255,255,0.08)' }} />
-              <StatPill value={100} unit="%" label="Private" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════ WHY TEXT ON IMAGES ══════ */}
-      <section id="why" className="relative overflow-hidden" style={{ background: '#0f1117', paddingTop: '48px', paddingBottom: '56px' }}>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px pointer-events-none" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent)' }} />
-        <div className="mx-auto max-w-6xl px-6 relative">
-          <SectionLabel color="#ec4899">Why it works</SectionLabel>
-          <h2 className="tracking-tight text-white mb-2" style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 'clamp(1.5rem, 3vw, 2rem)', maxWidth: '520px' }}>
-            Why text over images is the strongest format.
-          </h2>
-          <p className="text-sm mb-8 max-w-xl" style={{ color: '#6b7280' }}>
-            Every top creator on Pinterest, Instagram, and blogs relies on text overlays. Here's why.
-          </p>
-
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {BENEFITS.map((b) => (
-              <div key={b.num} className="flex gap-3 rounded-xl p-4"
-                style={{ background: 'rgba(30,32,42,0.4)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <div className="flex flex-col items-center flex-shrink-0">
-                  <span className="text-xs font-bold" style={{ color: '#818cf8', fontFamily: "'Playfair Display', Georgia, serif" }}>{b.num}</span>
-                  <div className="mt-1.5 w-8 h-8 rounded-lg flex items-center justify-center"
-                    style={{ background: 'rgba(99,102,241,0.1)', color: '#818cf8' }}>
-                    {b.icon}
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-xs text-white tracking-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{b.title}</h3>
-                  <p className="mt-1 text-xs leading-relaxed" style={{ color: '#6b7280' }}>{b.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══════ FEATURES ══════ */}
-      <section id="features" className="relative overflow-hidden" style={{ background: '#0f1117', paddingTop: '48px', paddingBottom: '56px' }}>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px pointer-events-none" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent)' }} />
-        <div className="mx-auto max-w-6xl px-6 relative">
-          <SectionLabel color="#6366f1">What's inside</SectionLabel>
-          <h2 className="tracking-tight text-white mb-6" style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 'clamp(1.5rem, 3vw, 2rem)', maxWidth: '440px' }}>
-            Everything you need — nothing you don't.
-          </h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <Feature icon={<IconResize />} title="Fluid resizing" desc="Drag, stretch, and squeeze overlays freely on all sides with pixel-perfect control." />
-            <Feature icon={<IconType />} title="Font control" desc="Choose fonts, sizes, alignment, and spacing precisely. Your brand, your way." />
-            <Feature icon={<IconShield />} title="Analytics-safe" desc="No tracking pixels. Zero telemetry. Your data stays in your browser, full stop." />
-          </div>
-        </div>
-      </section>
-
-      {/* ══════ RESULTS GALLERY ══════ */}
-      <section className="relative overflow-hidden" style={{ background: '#0f1117', paddingTop: '48px', paddingBottom: '56px' }}>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px pointer-events-none" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent)' }} />
-        <div className="mx-auto max-w-6xl px-6 relative">
-          <SectionLabel color="#22c55e">Results</SectionLabel>
-          <h2 className="tracking-tight text-white mb-2" style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 'clamp(1.5rem, 3vw, 2rem)', maxWidth: '440px' }}>
-            What creators are making.
-          </h2>
-          <p className="text-sm mb-8 max-w-xl" style={{ color: '#6b7280' }}>
-            From recipe blogs to product launches — see the kinds of overlays you can create in seconds.
-          </p>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {GALLERY_ITEMS.map((item, i) => (<GalleryCard key={i} item={item} />))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══════ CTA ══════ */}
-      <section className="relative overflow-hidden" style={{ background: '#0f1117', paddingTop: '16px', paddingBottom: '64px' }}>
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-2xl px-6 py-5"
-            style={{ background: 'rgba(30,32,42,0.6)', border: '1px solid rgba(255,255,255,0.07)', backdropFilter: 'blur(12px)' }}>
-            <div>
-              <p className="font-semibold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>Ready to create your first overlay?</p>
-              <p className="text-sm mt-0.5" style={{ color: '#6b7280' }}>No account needed. Start in seconds.</p>
-            </div>
-            <Link href="/tool"
-              className="inline-flex items-center rounded-full text-white text-sm font-semibold px-6 py-3 transition-all whitespace-nowrap"
-              style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', boxShadow: '0 4px 20px rgba(99,102,241,0.3)' }}>
-              Open the editor →
-            </Link>
-          </div>
-        </div>
-      </section>
+    <div style={{ background: 'var(--clr-bg)', minHeight: '100vh' }}>
+      <GlobalStyles />
+      <StickyNav />
+      <Hero />
+      <Ticker />
+      <Showcase />
+      <Features />
+      <FinalCTA />
+      <Footer />
     </div>
   )
 }
