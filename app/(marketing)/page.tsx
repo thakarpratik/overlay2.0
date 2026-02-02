@@ -394,7 +394,7 @@ function Showcase() {
         <div style={{ display: 'flex', gap: 8, marginBottom: 36, flexWrap: 'wrap' }}>
           {CATEGORIES.map((cat, i) => (
             <button key={cat.label} onClick={() => setActiveIdx(i)} style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 999, border: 'none', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600,
+              display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 999, cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600,
               background: i === activeIdx ? 'linear-gradient(135deg, var(--clr-primary), #4f46e5)' : 'rgba(30,32,42,0.6)',
               color: i === activeIdx ? '#fff' : 'var(--clr-sub)',
               boxShadow: i === activeIdx ? '0 4px 16px rgba(99,102,241,0.3)' : 'none',
