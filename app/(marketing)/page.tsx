@@ -221,7 +221,7 @@ function Hero() {
         }}>
           <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
             <iframe
-              src="https://www.youtube.com/embed/I6-xzqbRqzI?si=NWTo9jMPxf1t2_QD&controls=0&autoplay=1&mute=1&loop=1&playlist=I6-xzqbRqzI"
+              src="https://www.youtube.com/embed/6GY8CoLyxoE?si=rXA1JSzrhuUv9Jnb&controls=0&autoplay=1&mute=1&loop=1&playlist=6GY8CoLyxoE"
               title="OverlayTool Demo"
               style={{
                 position: 'absolute',
