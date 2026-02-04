@@ -16,7 +16,8 @@ export const comicPop: OverlayTemplate = {
       y: 0,
       w: 1000,
       h: 1500,
-      fill: "#fbbf24"
+      fill: "#fbbf24",
+      radius: 0
     },
     // Main explosion shape (large circle)
     {
@@ -28,7 +29,8 @@ export const comicPop: OverlayTemplate = {
       w: 800,
       h: 800,
       fill: "#ef4444",
-      shadow: "strong"
+      radius: 400,
+      shadow: "medium"
     },
     // White inner circle
     {
@@ -40,8 +42,8 @@ export const comicPop: OverlayTemplate = {
       w: 640,
       h: 640,
       fill: "#ffffff",
-      stroke: "#000000",
-      strokeWidth: 8
+      radius: 320,
+      border: { color: "#000000", width: 8 }
     },
     // Main action text
     {
@@ -59,8 +61,7 @@ export const comicPop: OverlayTemplate = {
       letterSpacing: 8,
       align: "center",
       color: "#000000",
-      stroke: "#fbbf24",
-      strokeWidth: 8
+      stroke: { color: "#fbbf24", width: 8 }
     },
     // Top banner
     {
@@ -72,6 +73,7 @@ export const comicPop: OverlayTemplate = {
       w: 800,
       h: 120,
       fill: "#000000",
+      radius: 0,
       rotation: -3
     },
     {
@@ -107,8 +109,7 @@ export const comicPop: OverlayTemplate = {
       letterSpacing: 6,
       align: "center",
       color: "#000000",
-      stroke: "#ffffff",
-      strokeWidth: 6
+      stroke: { color: "#ffffff", width: 6 }
     },
     // Small decorative dots
     {
@@ -119,7 +120,8 @@ export const comicPop: OverlayTemplate = {
       y: 350,
       w: 40,
       h: 40,
-      fill: "#000000"
+      fill: "#000000",
+      radius: 20
     },
     {
       id: "dot-2",
@@ -129,7 +131,8 @@ export const comicPop: OverlayTemplate = {
       y: 380,
       w: 50,
       h: 50,
-      fill: "#000000"
+      fill: "#000000",
+      radius: 25
     },
     {
       id: "dot-3",
@@ -139,7 +142,8 @@ export const comicPop: OverlayTemplate = {
       y: 1150,
       w: 45,
       h: 45,
-      fill: "#000000"
+      fill: "#000000",
+      radius: 22
     },
     {
       id: "dot-4",
@@ -149,7 +153,8 @@ export const comicPop: OverlayTemplate = {
       y: 1180,
       w: 40,
       h: 40,
-      fill: "#000000"
+      fill: "#000000",
+      radius: 20
     }
   ]
 };
