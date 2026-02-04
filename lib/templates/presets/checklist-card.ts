@@ -16,7 +16,8 @@ export const checklistCard: OverlayTemplate = {
       y: 0,
       w: 1000,
       h: 300,
-      fill: "#6366f1"
+      fill: "#6366f1",
+      radius: 0
     },
     // Title
     {
@@ -48,7 +49,7 @@ export const checklistCard: OverlayTemplate = {
       radius: 24,
       shadow: "medium"
     },
-    // Item 1
+    // Item 1 checkmark
     {
       id: "check-1",
       type: "text",

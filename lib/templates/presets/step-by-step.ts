@@ -16,7 +16,8 @@ export const stepByStep: OverlayTemplate = {
       y: 0,
       w: 1000,
       h: 200,
-      fill: "#1f2937"
+      fill: "#1f2937",
+      radius: 0
     },
     // Title
     {
@@ -44,7 +45,8 @@ export const stepByStep: OverlayTemplate = {
       y: 350,
       w: 120,
       h: 120,
-      fill: "#6366f1"
+      fill: "#6366f1",
+      radius: 60
     },
     {
       id: "step-1-num",
@@ -87,7 +89,8 @@ export const stepByStep: OverlayTemplate = {
       y: 600,
       w: 120,
       h: 120,
-      fill: "#ec4899"
+      fill: "#ec4899",
+      radius: 60
     },
     {
       id: "step-2-num",
@@ -130,7 +133,8 @@ export const stepByStep: OverlayTemplate = {
       y: 850,
       w: 120,
       h: 120,
-      fill: "#10b981"
+      fill: "#10b981",
+      radius: 60
     },
     {
       id: "step-3-num",

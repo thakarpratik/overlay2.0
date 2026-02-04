@@ -16,7 +16,8 @@ export const quoteCard: OverlayTemplate = {
       y: 0,
       w: 1000,
       h: 1500,
-      fill: "rgba(0,0,0,0.4)"
+      fill: "rgba(0,0,0,0.4)",
+      radius: 0
     },
     // Opening quote mark
     {
@@ -62,7 +63,8 @@ export const quoteCard: OverlayTemplate = {
       y: 980,
       w: 200,
       h: 2,
-      fill: "#fbbf24"
+      fill: "#fbbf24",
+      radius: 0
     },
     // Author name
     {

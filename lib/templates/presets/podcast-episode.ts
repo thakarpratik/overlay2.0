@@ -16,7 +16,8 @@ export const podcastEpisode: OverlayTemplate = {
       y: 0,
       w: 1000,
       h: 1500,
-      fill: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+      fill: "#667eea",
+      radius: 0
     },
     // "PODCAST" label
     {
@@ -45,7 +46,8 @@ export const podcastEpisode: OverlayTemplate = {
       w: 200,
       h: 200,
       fill: "rgba(255,255,255,0.2)",
-      blur: 5
+      radius: 100,
+      opacity: 0.8
     },
     {
       id: "ep-number",
@@ -74,7 +76,7 @@ export const podcastEpisode: OverlayTemplate = {
       h: 400,
       fill: "rgba(255,255,255,0.95)",
       radius: 24,
-      shadow: "strong"
+      shadow: "medium"
     },
     // Episode title
     {
@@ -110,7 +112,7 @@ export const podcastEpisode: OverlayTemplate = {
       align: "center",
       color: "#6b7280"
     },
-    // Audio wave bars (decorative)
+    // Audio wave bar 1
     {
       id: "wave-1",
       type: "shape",
@@ -123,6 +125,7 @@ export const podcastEpisode: OverlayTemplate = {
       radius: 10,
       opacity: 0.6
     },
+    // Audio wave bar 2
     {
       id: "wave-2",
       type: "shape",
@@ -135,6 +138,7 @@ export const podcastEpisode: OverlayTemplate = {
       radius: 10,
       opacity: 0.8
     },
+    // Audio wave bar 3
     {
       id: "wave-3",
       type: "shape",
@@ -147,6 +151,7 @@ export const podcastEpisode: OverlayTemplate = {
       radius: 10,
       opacity: 0.7
     },
+    // Audio wave bar 4
     {
       id: "wave-4",
       type: "shape",
@@ -159,23 +164,11 @@ export const podcastEpisode: OverlayTemplate = {
       radius: 10,
       opacity: 0.9
     },
-    {
-      id: "wave-5",
-      type: "shape",
-      shape: "rect",
-      x: 360,
-      y: 1100,
-      w: 20,
-      h: 80,
-      fill: "#ffffff",
-      radius: 10,
-      opacity: 0.6
-    },
     // Duration badge
     {
       id: "duration-badge",
       type: "shape",
-      shape: "rect",
+      shape: "pill",
       x: 450,
       y: 1100,
       w: 140,

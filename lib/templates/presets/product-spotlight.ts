@@ -16,7 +16,8 @@ export const productSpotlight: OverlayTemplate = {
       y: 0,
       w: 1000,
       h: 1500,
-      fill: "linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.9) 100%)"
+      fill: "rgba(0,0,0,0.8)",
+      radius: 0
     },
     // Spotlight circle (glow effect)
     {
@@ -28,13 +29,14 @@ export const productSpotlight: OverlayTemplate = {
       w: 600,
       h: 600,
       fill: "rgba(255,255,255,0.1)",
-      blur: 80
+      radius: 300,
+      opacity: 0.5
     },
     // "NEW" badge
     {
       id: "new-badge",
       type: "shape",
-      shape: "rect",
+      shape: "pill",
       x: 80,
       y: 150,
       w: 180,
@@ -92,11 +94,11 @@ export const productSpotlight: OverlayTemplate = {
       align: "center",
       color: "#fbbf24"
     },
-    // CTA
+    // CTA background
     {
       id: "cta-bg",
       type: "shape",
-      shape: "rect",
+      shape: "pill",
       x: 350,
       y: 1320,
       w: 300,

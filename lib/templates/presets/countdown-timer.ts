@@ -16,7 +16,8 @@ export const countdownTimer: OverlayTemplate = {
       y: 0,
       w: 1000,
       h: 1500,
-      fill: "linear-gradient(180deg, #dc2626 0%, #991b1b 100%)"
+      fill: "#dc2626",
+      radius: 0
     },
     // Top label
     {
@@ -63,7 +64,7 @@ export const countdownTimer: OverlayTemplate = {
       h: 240,
       fill: "rgba(0,0,0,0.5)",
       radius: 16,
-      shadow: "strong"
+      shadow: "medium"
     },
     {
       id: "hours-num",
@@ -108,7 +109,7 @@ export const countdownTimer: OverlayTemplate = {
       h: 240,
       fill: "rgba(0,0,0,0.5)",
       radius: 16,
-      shadow: "strong"
+      shadow: "medium"
     },
     {
       id: "minutes-num",
@@ -153,7 +154,7 @@ export const countdownTimer: OverlayTemplate = {
       h: 240,
       fill: "rgba(0,0,0,0.5)",
       radius: 16,
-      shadow: "strong"
+      shadow: "medium"
     },
     {
       id: "seconds-num",

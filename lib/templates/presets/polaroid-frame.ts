@@ -18,7 +18,7 @@ export const polaroidFrame: OverlayTemplate = {
       h: 900,
       fill: "#ffffff",
       radius: 8,
-      shadow: "strong",
+      shadow: "medium",
       rotation: -2
     },
     // Photo area (darker to show it's behind the image)
@@ -31,6 +31,7 @@ export const polaroidFrame: OverlayTemplate = {
       w: 720,
       h: 720,
       fill: "rgba(0,0,0,0.05)",
+      radius: 0,
       rotation: -2
     },
     // Handwritten style text
@@ -50,7 +51,7 @@ export const polaroidFrame: OverlayTemplate = {
       align: "center",
       color: "#1f2937"
     },
-    // Small decorative elements
+    // Small decorative tape elements
     {
       id: "tape-1",
       type: "shape",
@@ -60,6 +61,7 @@ export const polaroidFrame: OverlayTemplate = {
       w: 100,
       h: 35,
       fill: "rgba(251,191,36,0.3)",
+      radius: 0,
       rotation: -2
     },
     {
@@ -71,6 +73,7 @@ export const polaroidFrame: OverlayTemplate = {
       w: 100,
       h: 35,
       fill: "rgba(251,191,36,0.3)",
+      radius: 0,
       rotation: -2
     }
   ]

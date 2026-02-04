@@ -16,7 +16,8 @@ export const neonGlow: OverlayTemplate = {
       y: 0,
       w: 1000,
       h: 1500,
-      fill: "rgba(0,0,0,0.6)"
+      fill: "rgba(0,0,0,0.6)",
+      radius: 0
     },
     // Top neon text
     {
@@ -34,9 +35,7 @@ export const neonGlow: OverlayTemplate = {
       letterSpacing: 8,
       align: "center",
       color: "#ff00ff",
-      stroke: "#ff00ff",
-      strokeWidth: 3,
-      shadow: "neon"
+      stroke: { color: "#ff00ff", width: 3 }
     },
     // Middle neon text
     {
@@ -54,11 +53,9 @@ export const neonGlow: OverlayTemplate = {
       letterSpacing: 12,
       align: "center",
       color: "#00ffff",
-      stroke: "#00ffff",
-      strokeWidth: 4,
-      shadow: "neon"
+      stroke: { color: "#00ffff", width: 4 }
     },
-    // Percentage badge
+    // Percentage badge background
     {
       id: "badge-bg",
       type: "shape",
@@ -68,8 +65,10 @@ export const neonGlow: OverlayTemplate = {
       w: 300,
       h: 300,
       fill: "#ff00ff",
-      shadow: "neon"
+      radius: 150,
+      shadow: "medium"
     },
+    // Percentage text
     {
       id: "percentage",
       type: "text",
@@ -103,7 +102,7 @@ export const neonGlow: OverlayTemplate = {
       align: "center",
       color: "#ffffff"
     },
-    // Accent lines
+    // Accent line
     {
       id: "line-1",
       type: "shape",
@@ -113,6 +112,7 @@ export const neonGlow: OverlayTemplate = {
       w: 400,
       h: 4,
       fill: "#00ffff",
+      radius: 0,
       shadow: "soft"
     }
   ]

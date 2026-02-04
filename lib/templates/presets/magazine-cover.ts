@@ -16,7 +16,8 @@ export const magazineCover: OverlayTemplate = {
       y: 0,
       w: 1000,
       h: 120,
-      fill: "rgba(0,0,0,0.85)"
+      fill: "rgba(0,0,0,0.85)",
+      radius: 0
     },
     // Magazine title
     {
@@ -124,7 +125,8 @@ export const magazineCover: OverlayTemplate = {
       y: 970,
       w: 120,
       h: 3,
-      fill: "#ef4444"
+      fill: "#ef4444",
+      radius: 0
     }
   ]
 };

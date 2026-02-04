@@ -17,6 +17,7 @@ export const brutalistGeo: OverlayTemplate = {
       w: 500,
       h: 800,
       fill: "#fbbf24",
+      radius: 0,
       rotation: -15,
       opacity: 0.9
     },
@@ -30,6 +31,7 @@ export const brutalistGeo: OverlayTemplate = {
       w: 450,
       h: 600,
       fill: "#000000",
+      radius: 0,
       rotation: 8,
       opacity: 0.85
     },
@@ -43,6 +45,7 @@ export const brutalistGeo: OverlayTemplate = {
       w: 200,
       h: 200,
       fill: "#ef4444",
+      radius: 0,
       rotation: 45
     },
     // Bold headline - word 1
@@ -61,8 +64,7 @@ export const brutalistGeo: OverlayTemplate = {
       letterSpacing: 4,
       align: "left",
       color: "#ffffff",
-      stroke: "#000000",
-      strokeWidth: 4
+      stroke: { color: "#000000", width: 4 }
     },
     // Bold headline - word 2
     {
@@ -80,8 +82,7 @@ export const brutalistGeo: OverlayTemplate = {
       letterSpacing: 4,
       align: "left",
       color: "#000000",
-      stroke: "#ffffff",
-      strokeWidth: 3
+      stroke: { color: "#ffffff", width: 3 }
     },
     // Small text overlay
     {
@@ -110,6 +111,7 @@ export const brutalistGeo: OverlayTemplate = {
       w: 600,
       h: 6,
       fill: "#fbbf24",
+      radius: 0,
       rotation: -3
     }
   ]

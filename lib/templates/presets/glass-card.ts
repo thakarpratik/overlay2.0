@@ -18,8 +18,7 @@ export const glassCard: OverlayTemplate = {
       h: 700,
       fill: "rgba(255,255,255,0.15)",
       radius: 32,
-      shadow: "strong",
-      blur: 20
+      shadow: "medium"
     },
     // Inner accent card
     {
@@ -31,8 +30,7 @@ export const glassCard: OverlayTemplate = {
       w: 760,
       h: 180,
       fill: "rgba(255,255,255,0.25)",
-      radius: 20,
-      blur: 10
+      radius: 20
     },
     // Number badge
     {
@@ -95,7 +93,8 @@ export const glassCard: OverlayTemplate = {
       w: 80,
       h: 80,
       fill: "rgba(251,191,36,0.6)",
-      blur: 8
+      radius: 40,
+      opacity: 0.8
     },
     {
       id: "circle-2",
@@ -106,7 +105,8 @@ export const glassCard: OverlayTemplate = {
       w: 60,
       h: 60,
       fill: "rgba(236,72,153,0.6)",
-      blur: 8
+      radius: 30,
+      opacity: 0.8
     }
   ]
 };

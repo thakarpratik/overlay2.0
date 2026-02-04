@@ -16,9 +16,10 @@ export const workoutMotivation: OverlayTemplate = {
       y: 0,
       w: 1000,
       h: 1500,
-      fill: "rgba(0,0,0,0.5)"
+      fill: "rgba(0,0,0,0.5)",
+      radius: 0
     },
-    // Diagonal accent stripe
+    // Diagonal accent stripe 1
     {
       id: "stripe-1",
       type: "shape",
@@ -28,6 +29,7 @@ export const workoutMotivation: OverlayTemplate = {
       w: 1400,
       h: 30,
       fill: "#ef4444",
+      radius: 0,
       rotation: -15
     },
     {
@@ -39,6 +41,7 @@ export const workoutMotivation: OverlayTemplate = {
       w: 1400,
       h: 30,
       fill: "#ef4444",
+      radius: 0,
       rotation: -15
     },
     // Main motivational text
@@ -57,8 +60,7 @@ export const workoutMotivation: OverlayTemplate = {
       letterSpacing: 4,
       align: "center",
       color: "#ffffff",
-      stroke: "#000000",
-      strokeWidth: 4
+      stroke: { color: "#000000", width: 4 }
     },
     {
       id: "motivation-2",
@@ -75,8 +77,7 @@ export const workoutMotivation: OverlayTemplate = {
       letterSpacing: 4,
       align: "center",
       color: "#ef4444",
-      stroke: "#000000",
-      strokeWidth: 4
+      stroke: { color: "#000000", width: 4 }
     },
     // Bottom card with workout info
     {
@@ -88,8 +89,7 @@ export const workoutMotivation: OverlayTemplate = {
       w: 800,
       h: 300,
       fill: "rgba(255,255,255,0.15)",
-      radius: 20,
-      blur: 10
+      radius: 20
     },
     // Workout type
     {

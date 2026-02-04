@@ -16,8 +16,10 @@ export const gradientSplit: OverlayTemplate = {
       y: 0,
       w: 700,
       h: 1500,
-      fill: "linear-gradient(135deg, rgba(99,102,241,0.85) 0%, rgba(168,85,247,0.85) 100%)",
-      rotation: 8
+      fill: "#6366f1",
+      radius: 0,
+      rotation: 8,
+      opacity: 0.85
     },
     // Main headline - large and dramatic
     {
@@ -35,8 +37,7 @@ export const gradientSplit: OverlayTemplate = {
       letterSpacing: -3,
       align: "left",
       color: "#ffffff",
-      stroke: "rgba(0,0,0,0.2)",
-      strokeWidth: 2
+      stroke: { color: "rgba(0,0,0,0.2)", width: 2 }
     },
     // Subheadline with contrasting style
     {

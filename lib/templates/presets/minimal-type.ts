@@ -16,7 +16,8 @@ export const minimalType: OverlayTemplate = {
       y: 0,
       w: 1000,
       h: 1500,
-      fill: "rgba(255,255,255,0.92)"
+      fill: "rgba(255,255,255,0.92)",
+      radius: 0
     },
     // Top thin line
     {
@@ -27,7 +28,8 @@ export const minimalType: OverlayTemplate = {
       y: 300,
       w: 600,
       h: 2,
-      fill: "#000000"
+      fill: "#000000",
+      radius: 0
     },
     // Main headline
     {
@@ -55,7 +57,8 @@ export const minimalType: OverlayTemplate = {
       y: 1000,
       w: 600,
       h: 2,
-      fill: "#000000"
+      fill: "#000000",
+      radius: 0
     },
     // Small subtext
     {

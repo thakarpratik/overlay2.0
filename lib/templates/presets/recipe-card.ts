@@ -16,7 +16,8 @@ export const recipeCard: OverlayTemplate = {
       y: 0,
       w: 1000,
       h: 400,
-      fill: "#f97316"
+      fill: "#f97316",
+      radius: 0
     },
     // Recipe name
     {
@@ -45,6 +46,7 @@ export const recipeCard: OverlayTemplate = {
       w: 200,
       h: 200,
       fill: "#ffffff",
+      radius: 100,
       shadow: "medium"
     },
     {

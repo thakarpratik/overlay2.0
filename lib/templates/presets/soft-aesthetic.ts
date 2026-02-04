@@ -17,7 +17,8 @@ export const softAesthetic: OverlayTemplate = {
       w: 600,
       h: 600,
       fill: "rgba(251,207,232,0.5)",
-      blur: 60
+      radius: 300,
+      opacity: 0.6
     },
     // Soft gradient blob 2
     {
@@ -29,7 +30,8 @@ export const softAesthetic: OverlayTemplate = {
       w: 700,
       h: 700,
       fill: "rgba(221,214,254,0.5)",
-      blur: 60
+      radius: 350,
+      opacity: 0.6
     },
     // Semi-transparent card
     {
@@ -42,7 +44,6 @@ export const softAesthetic: OverlayTemplate = {
       h: 500,
       fill: "rgba(255,255,255,0.75)",
       radius: 40,
-      blur: 10,
       shadow: "soft"
     },
     // Small decorative shape
@@ -55,6 +56,7 @@ export const softAesthetic: OverlayTemplate = {
       w: 100,
       h: 100,
       fill: "#fbbf24",
+      radius: 50,
       opacity: 0.6
     },
     // Main headline
@@ -112,7 +114,8 @@ export const softAesthetic: OverlayTemplate = {
       y: 450,
       w: 60,
       h: 60,
-      fill: "rgba(167,243,208,0.6)"
+      fill: "rgba(167,243,208,0.6)",
+      radius: 30
     }
   ]
 };

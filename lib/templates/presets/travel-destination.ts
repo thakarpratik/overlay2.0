@@ -16,9 +16,10 @@ export const travelDestination: OverlayTemplate = {
       y: 0,
       w: 1000,
       h: 1500,
-      fill: "linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%)"
+      fill: "rgba(0,0,0,0.5)",
+      radius: 0
     },
-    // Location pin icon (simplified as text)
+    // Location pin icon
     {
       id: "pin-icon",
       type: "text",
@@ -51,8 +52,7 @@ export const travelDestination: OverlayTemplate = {
       letterSpacing: 4,
       align: "center",
       color: "#ffffff",
-      stroke: "rgba(0,0,0,0.3)",
-      strokeWidth: 3
+      stroke: { color: "rgba(0,0,0,0.3)", width: 3 }
     },
     // Country
     {
@@ -82,13 +82,13 @@ export const travelDestination: OverlayTemplate = {
       h: 400,
       fill: "rgba(255,255,255,0.95)",
       radius: 24,
-      shadow: "strong"
+      shadow: "medium"
     },
     // "Must Visit" badge
     {
       id: "badge",
       type: "shape",
-      shape: "rect",
+      shape: "pill",
       x: 350,
       y: 870,
       w: 300,

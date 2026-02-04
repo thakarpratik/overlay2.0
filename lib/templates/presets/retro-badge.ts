@@ -16,7 +16,8 @@ export const retroBadge: OverlayTemplate = {
       y: 0,
       w: 1000,
       h: 1500,
-      fill: "linear-gradient(135deg, #f59e0b 0%, #dc2626 100%)"
+      fill: "#f59e0b",
+      radius: 0
     },
     // Large circle badge
     {
@@ -28,7 +29,8 @@ export const retroBadge: OverlayTemplate = {
       w: 700,
       h: 700,
       fill: "#fef3c7",
-      shadow: "strong"
+      radius: 350,
+      shadow: "medium"
     },
     // Inner circle
     {
@@ -40,8 +42,8 @@ export const retroBadge: OverlayTemplate = {
       w: 600,
       h: 600,
       fill: "rgba(245,158,11,0.1)",
-      stroke: "#f59e0b",
-      strokeWidth: 4
+      radius: 300,
+      border: { color: "#f59e0b", width: 4 }
     },
     // Top curved text
     {
@@ -94,7 +96,7 @@ export const retroBadge: OverlayTemplate = {
       align: "center",
       color: "#92400e"
     },
-    // Decorative stars
+    // Decorative star left
     {
       id: "star-left",
       type: "text",
@@ -111,6 +113,7 @@ export const retroBadge: OverlayTemplate = {
       align: "center",
       color: "#f59e0b"
     },
+    // Decorative star right
     {
       id: "star-right",
       type: "text",

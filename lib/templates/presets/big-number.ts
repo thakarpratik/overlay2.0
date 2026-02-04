@@ -34,7 +34,8 @@ export const bigNumber: OverlayTemplate = {
       y: 750,
       w: 1000,
       h: 180,
-      fill: "#6366f1"
+      fill: "#6366f1",
+      radius: 0
     },
     // Main text on bar
     {

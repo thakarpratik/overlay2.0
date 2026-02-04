@@ -17,9 +17,10 @@ export const beforeAfter: OverlayTemplate = {
       w: 10,
       h: 1500,
       fill: "#ffffff",
+      radius: 0,
       shadow: "medium"
     },
-    // "BEFORE" label left
+    // "BEFORE" label left background
     {
       id: "before-bg",
       type: "shape",
@@ -47,7 +48,7 @@ export const beforeAfter: OverlayTemplate = {
       align: "center",
       color: "#ffffff"
     },
-    // "AFTER" label right
+    // "AFTER" label right background
     {
       id: "after-bg",
       type: "shape",
@@ -86,7 +87,7 @@ export const beforeAfter: OverlayTemplate = {
       h: 180,
       fill: "rgba(255,255,255,0.95)",
       radius: 20,
-      shadow: "strong"
+      shadow: "medium"
     },
     // Result headline
     {
@@ -121,8 +122,7 @@ export const beforeAfter: OverlayTemplate = {
       letterSpacing: 0,
       align: "center",
       color: "#10b981",
-      stroke: "#ffffff",
-      strokeWidth: 4
+      stroke: { color: "#ffffff", width: 4 }
     }
   ]
 };

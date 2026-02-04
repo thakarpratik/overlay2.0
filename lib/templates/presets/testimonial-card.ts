@@ -18,7 +18,7 @@ export const testimonialCard: OverlayTemplate = {
       h: 1000,
       fill: "#ffffff",
       radius: 32,
-      shadow: "strong"
+      shadow: "medium"
     },
     // 5-star rating
     {
@@ -45,7 +45,7 @@ export const testimonialCard: OverlayTemplate = {
       y: 480,
       w: 720,
       h: 400,
-      text: "\"This product completely\nchanged my life! I can't\nimagine going back to\nmy old routine.\"",
+      text: "This product completely\nchanged my life! I can't\nimagine going back to\nmy old routine.",
       fontFamily: "Georgia, serif",
       fontWeight: 400,
       fontSize: 42,
@@ -64,6 +64,7 @@ export const testimonialCard: OverlayTemplate = {
       w: 200,
       h: 200,
       fill: "#e5e7eb",
+      radius: 100,
       shadow: "soft"
     },
     {

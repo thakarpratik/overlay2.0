@@ -40,8 +40,7 @@ export const numberedList: OverlayTemplate = {
       letterSpacing: 2,
       align: "center",
       color: "#8b5a5a",
-      stroke: "#ffffff",
-      strokeWidth: 6
+      stroke: { color: "#ffffff", width: 6 }
     },
     // Second word
     {
@@ -76,8 +75,7 @@ export const numberedList: OverlayTemplate = {
       letterSpacing: 2,
       align: "center",
       color: "#8b5a5a",
-      stroke: "#ffffff",
-      strokeWidth: 6
+      stroke: { color: "#ffffff", width: 6 }
     },
     // Fourth word
     {
@@ -98,4 +96,3 @@ export const numberedList: OverlayTemplate = {
     }
   ]
 };
-
