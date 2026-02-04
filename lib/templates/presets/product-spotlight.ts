@@ -11,7 +11,7 @@ export const productSpotlight: OverlayTemplate = {
     {
       id: "bg-gradient",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 0,
       y: 0,
       w: 1000,
@@ -34,7 +34,7 @@ export const productSpotlight: OverlayTemplate = {
     {
       id: "new-badge",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 80,
       y: 150,
       w: 180,
@@ -96,7 +96,7 @@ export const productSpotlight: OverlayTemplate = {
     {
       id: "cta-bg",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 350,
       y: 1320,
       w: 300,

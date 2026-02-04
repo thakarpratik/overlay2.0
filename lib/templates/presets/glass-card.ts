@@ -11,7 +11,7 @@ export const glassCard: OverlayTemplate = {
     {
       id: "glass-main",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 80,
       y: 400,
       w: 840,
@@ -25,7 +25,7 @@ export const glassCard: OverlayTemplate = {
     {
       id: "glass-accent",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 120,
       y: 440,
       w: 760,

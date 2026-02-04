@@ -29,7 +29,7 @@ export const bigNumber: OverlayTemplate = {
     {
       id: "accent-bar",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 0,
       y: 750,
       w: 1000,

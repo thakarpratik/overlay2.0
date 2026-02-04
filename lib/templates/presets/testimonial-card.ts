@@ -11,7 +11,7 @@ export const testimonialCard: OverlayTemplate = {
     {
       id: "card-bg",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 80,
       y: 250,
       w: 840,

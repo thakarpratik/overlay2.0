@@ -11,7 +11,7 @@ export const gradientSplit: OverlayTemplate = {
     {
       id: "gradient-left",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: -100,
       y: 0,
       w: 700,
@@ -59,7 +59,7 @@ export const gradientSplit: OverlayTemplate = {
     {
       id: "accent-bottom",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 60,
       y: 1350,
       w: 300,

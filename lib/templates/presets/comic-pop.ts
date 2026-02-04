@@ -11,7 +11,7 @@ export const comicPop: OverlayTemplate = {
     {
       id: "starburst-bg",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 0,
       y: 0,
       w: 1000,
@@ -66,7 +66,7 @@ export const comicPop: OverlayTemplate = {
     {
       id: "top-banner",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 100,
       y: 200,
       w: 800,

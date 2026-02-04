@@ -11,7 +11,7 @@ export const retroBadge: OverlayTemplate = {
     {
       id: "retro-bg",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 0,
       y: 0,
       w: 1000,

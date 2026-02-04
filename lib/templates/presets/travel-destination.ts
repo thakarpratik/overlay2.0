@@ -11,7 +11,7 @@ export const travelDestination: OverlayTemplate = {
     {
       id: "gradient",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 0,
       y: 0,
       w: 1000,
@@ -75,7 +75,7 @@ export const travelDestination: OverlayTemplate = {
     {
       id: "info-card",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 120,
       y: 900,
       w: 760,
@@ -88,7 +88,7 @@ export const travelDestination: OverlayTemplate = {
     {
       id: "badge",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 350,
       y: 870,
       w: 300,

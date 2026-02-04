@@ -11,7 +11,7 @@ export const minimalType: OverlayTemplate = {
     {
       id: "white-overlay",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 0,
       y: 0,
       w: 1000,
@@ -22,7 +22,7 @@ export const minimalType: OverlayTemplate = {
     {
       id: "line-top",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 200,
       y: 300,
       w: 600,
@@ -50,7 +50,7 @@ export const minimalType: OverlayTemplate = {
     {
       id: "line-bottom",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 200,
       y: 1000,
       w: 600,

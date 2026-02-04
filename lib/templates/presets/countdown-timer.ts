@@ -11,7 +11,7 @@ export const countdownTimer: OverlayTemplate = {
     {
       id: "alert-bg",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 0,
       y: 0,
       w: 1000,
@@ -56,7 +56,7 @@ export const countdownTimer: OverlayTemplate = {
     {
       id: "hours-box",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 120,
       y: 600,
       w: 200,
@@ -101,7 +101,7 @@ export const countdownTimer: OverlayTemplate = {
     {
       id: "minutes-box",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 400,
       y: 600,
       w: 200,
@@ -146,7 +146,7 @@ export const countdownTimer: OverlayTemplate = {
     {
       id: "seconds-box",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 680,
       y: 600,
       w: 200,

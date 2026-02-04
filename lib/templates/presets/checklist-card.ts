@@ -11,7 +11,7 @@ export const checklistCard: OverlayTemplate = {
     {
       id: "header",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 0,
       y: 0,
       w: 1000,
@@ -39,7 +39,7 @@ export const checklistCard: OverlayTemplate = {
     {
       id: "list-bg",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 80,
       y: 350,
       w: 840,

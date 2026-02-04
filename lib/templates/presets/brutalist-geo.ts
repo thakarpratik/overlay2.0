@@ -11,7 +11,7 @@ export const brutalistGeo: OverlayTemplate = {
     {
       id: "geo-1",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: -100,
       y: 200,
       w: 500,
@@ -24,7 +24,7 @@ export const brutalistGeo: OverlayTemplate = {
     {
       id: "geo-2",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 600,
       y: 400,
       w: 450,
@@ -37,7 +37,7 @@ export const brutalistGeo: OverlayTemplate = {
     {
       id: "geo-3",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 350,
       y: 100,
       w: 200,
@@ -104,7 +104,7 @@ export const brutalistGeo: OverlayTemplate = {
     {
       id: "line-accent",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 80,
       y: 1300,
       w: 600,

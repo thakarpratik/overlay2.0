@@ -11,7 +11,7 @@ export const magazineCover: OverlayTemplate = {
     {
       id: "top-bar",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 0,
       y: 0,
       w: 1000,
@@ -56,7 +56,7 @@ export const magazineCover: OverlayTemplate = {
     {
       id: "headline-bg",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 60,
       y: 900,
       w: 880,
@@ -119,7 +119,7 @@ export const magazineCover: OverlayTemplate = {
     {
       id: "decor-line",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 80,
       y: 970,
       w: 120,

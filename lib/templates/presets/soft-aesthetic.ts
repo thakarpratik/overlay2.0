@@ -35,7 +35,7 @@ export const softAesthetic: OverlayTemplate = {
     {
       id: "card",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 100,
       y: 500,
       w: 800,
@@ -78,7 +78,7 @@ export const softAesthetic: OverlayTemplate = {
     {
       id: "underline",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 400,
       y: 810,
       w: 200,

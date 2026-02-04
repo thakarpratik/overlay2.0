@@ -11,7 +11,7 @@ export const stepByStep: OverlayTemplate = {
     {
       id: "header-bar",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 0,
       y: 0,
       w: 1000,

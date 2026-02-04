@@ -11,7 +11,7 @@ export const beforeAfter: OverlayTemplate = {
     {
       id: "divider",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 495,
       y: 0,
       w: 10,
@@ -23,7 +23,7 @@ export const beforeAfter: OverlayTemplate = {
     {
       id: "before-bg",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 50,
       y: 100,
       w: 400,
@@ -51,7 +51,7 @@ export const beforeAfter: OverlayTemplate = {
     {
       id: "after-bg",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 550,
       y: 100,
       w: 400,
@@ -79,7 +79,7 @@ export const beforeAfter: OverlayTemplate = {
     {
       id: "result-card",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 100,
       y: 1250,
       w: 800,

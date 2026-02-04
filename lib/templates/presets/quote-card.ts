@@ -11,7 +11,7 @@ export const quoteCard: OverlayTemplate = {
     {
       id: "bg-overlay",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 0,
       y: 0,
       w: 1000,
@@ -57,7 +57,7 @@ export const quoteCard: OverlayTemplate = {
     {
       id: "divider",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 400,
       y: 980,
       w: 200,

@@ -11,7 +11,7 @@ export const workoutMotivation: OverlayTemplate = {
     {
       id: "dark-overlay",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 0,
       y: 0,
       w: 1000,
@@ -22,7 +22,7 @@ export const workoutMotivation: OverlayTemplate = {
     {
       id: "stripe-1",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: -200,
       y: 200,
       w: 1400,
@@ -33,7 +33,7 @@ export const workoutMotivation: OverlayTemplate = {
     {
       id: "stripe-2",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: -200,
       y: 1200,
       w: 1400,
@@ -82,7 +82,7 @@ export const workoutMotivation: OverlayTemplate = {
     {
       id: "workout-card",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 100,
       y: 1000,
       w: 800,

@@ -11,7 +11,7 @@ export const recipeCard: OverlayTemplate = {
     {
       id: "top-section",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 0,
       y: 0,
       w: 1000,
@@ -67,7 +67,7 @@ export const recipeCard: OverlayTemplate = {
     {
       id: "details-card",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 80,
       y: 560,
       w: 840,

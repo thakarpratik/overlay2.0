@@ -11,7 +11,7 @@ export const polaroidFrame: OverlayTemplate = {
     {
       id: "polaroid",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 100,
       y: 300,
       w: 800,
@@ -25,7 +25,7 @@ export const polaroidFrame: OverlayTemplate = {
     {
       id: "photo-area",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 140,
       y: 340,
       w: 720,
@@ -54,7 +54,7 @@ export const polaroidFrame: OverlayTemplate = {
     {
       id: "tape-1",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 450,
       y: 250,
       w: 100,
@@ -65,7 +65,7 @@ export const polaroidFrame: OverlayTemplate = {
     {
       id: "tape-2",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 450,
       y: 1230,
       w: 100,

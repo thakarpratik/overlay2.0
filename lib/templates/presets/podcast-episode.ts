@@ -11,7 +11,7 @@ export const podcastEpisode: OverlayTemplate = {
     {
       id: "bg-gradient",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 0,
       y: 0,
       w: 1000,
@@ -67,7 +67,7 @@ export const podcastEpisode: OverlayTemplate = {
     {
       id: "title-card",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 80,
       y: 550,
       w: 840,
@@ -114,7 +114,7 @@ export const podcastEpisode: OverlayTemplate = {
     {
       id: "wave-1",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 200,
       y: 1100,
       w: 20,
@@ -126,7 +126,7 @@ export const podcastEpisode: OverlayTemplate = {
     {
       id: "wave-2",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 240,
       y: 1080,
       w: 20,
@@ -138,7 +138,7 @@ export const podcastEpisode: OverlayTemplate = {
     {
       id: "wave-3",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 280,
       y: 1090,
       w: 20,
@@ -150,7 +150,7 @@ export const podcastEpisode: OverlayTemplate = {
     {
       id: "wave-4",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 320,
       y: 1070,
       w: 20,
@@ -162,7 +162,7 @@ export const podcastEpisode: OverlayTemplate = {
     {
       id: "wave-5",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 360,
       y: 1100,
       w: 20,
@@ -175,7 +175,7 @@ export const podcastEpisode: OverlayTemplate = {
     {
       id: "duration-badge",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 450,
       y: 1100,
       w: 140,

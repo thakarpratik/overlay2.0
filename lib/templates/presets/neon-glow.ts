@@ -11,7 +11,7 @@ export const neonGlow: OverlayTemplate = {
     {
       id: "dark-bg",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 0,
       y: 0,
       w: 1000,
@@ -107,7 +107,7 @@ export const neonGlow: OverlayTemplate = {
     {
       id: "line-1",
       type: "shape",
-      shape: "rectangle",
+      shape: "rect",
       x: 300,
       y: 1200,
       w: 400,
