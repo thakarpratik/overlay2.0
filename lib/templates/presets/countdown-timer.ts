@@ -1,0 +1,208 @@
+import { OverlayTemplate } from "../schema";
+
+export const countdownTimer: OverlayTemplate = {
+  id: "countdown-timer",
+  name: "Countdown Timer",
+  category: "Urgency",
+  tags: ["countdown", "timer", "urgency", "deadline", "sale"],
+  canvas: { width: 1000, height: 1500 },
+  layers: [
+    // Alert background
+    {
+      id: "alert-bg",
+      type: "shape",
+      shape: "rectangle",
+      x: 0,
+      y: 0,
+      w: 1000,
+      h: 1500,
+      fill: "linear-gradient(180deg, #dc2626 0%, #991b1b 100%)"
+    },
+    // Top label
+    {
+      id: "urgency-label",
+      type: "text",
+      x: 100,
+      y: 200,
+      w: 800,
+      h: 80,
+      text: "LIMITED TIME ONLY",
+      fontFamily: "system-ui",
+      fontWeight: 900,
+      fontSize: 36,
+      lineHeight: 1,
+      letterSpacing: 6,
+      align: "center",
+      color: "#fbbf24"
+    },
+    // Main headline
+    {
+      id: "headline",
+      type: "text",
+      x: 80,
+      y: 320,
+      w: 840,
+      h: 180,
+      text: "FLASH SALE\nENDS IN",
+      fontFamily: "system-ui",
+      fontWeight: 900,
+      fontSize: 72,
+      lineHeight: 1.1,
+      letterSpacing: 2,
+      align: "center",
+      color: "#ffffff"
+    },
+    // Hours box
+    {
+      id: "hours-box",
+      type: "shape",
+      shape: "rectangle",
+      x: 120,
+      y: 600,
+      w: 200,
+      h: 240,
+      fill: "rgba(0,0,0,0.5)",
+      radius: 16,
+      shadow: "strong"
+    },
+    {
+      id: "hours-num",
+      type: "text",
+      x: 120,
+      y: 630,
+      w: 200,
+      h: 140,
+      text: "23",
+      fontFamily: "system-ui",
+      fontWeight: 900,
+      fontSize: 100,
+      lineHeight: 1,
+      letterSpacing: 0,
+      align: "center",
+      color: "#ffffff"
+    },
+    {
+      id: "hours-label",
+      type: "text",
+      x: 120,
+      y: 770,
+      w: 200,
+      h: 50,
+      text: "HOURS",
+      fontFamily: "system-ui",
+      fontWeight: 700,
+      fontSize: 24,
+      lineHeight: 1,
+      letterSpacing: 2,
+      align: "center",
+      color: "rgba(255,255,255,0.8)"
+    },
+    // Minutes box
+    {
+      id: "minutes-box",
+      type: "shape",
+      shape: "rectangle",
+      x: 400,
+      y: 600,
+      w: 200,
+      h: 240,
+      fill: "rgba(0,0,0,0.5)",
+      radius: 16,
+      shadow: "strong"
+    },
+    {
+      id: "minutes-num",
+      type: "text",
+      x: 400,
+      y: 630,
+      w: 200,
+      h: 140,
+      text: "59",
+      fontFamily: "system-ui",
+      fontWeight: 900,
+      fontSize: 100,
+      lineHeight: 1,
+      letterSpacing: 0,
+      align: "center",
+      color: "#ffffff"
+    },
+    {
+      id: "minutes-label",
+      type: "text",
+      x: 400,
+      y: 770,
+      w: 200,
+      h: 50,
+      text: "MINUTES",
+      fontFamily: "system-ui",
+      fontWeight: 700,
+      fontSize: 24,
+      lineHeight: 1,
+      letterSpacing: 2,
+      align: "center",
+      color: "rgba(255,255,255,0.8)"
+    },
+    // Seconds box
+    {
+      id: "seconds-box",
+      type: "shape",
+      shape: "rectangle",
+      x: 680,
+      y: 600,
+      w: 200,
+      h: 240,
+      fill: "rgba(0,0,0,0.5)",
+      radius: 16,
+      shadow: "strong"
+    },
+    {
+      id: "seconds-num",
+      type: "text",
+      x: 680,
+      y: 630,
+      w: 200,
+      h: 140,
+      text: "45",
+      fontFamily: "system-ui",
+      fontWeight: 900,
+      fontSize: 100,
+      lineHeight: 1,
+      letterSpacing: 0,
+      align: "center",
+      color: "#ffffff"
+    },
+    {
+      id: "seconds-label",
+      type: "text",
+      x: 680,
+      y: 770,
+      w: 200,
+      h: 50,
+      text: "SECONDS",
+      fontFamily: "system-ui",
+      fontWeight: 700,
+      fontSize: 24,
+      lineHeight: 1,
+      letterSpacing: 2,
+      align: "center",
+      color: "rgba(255,255,255,0.8)"
+    },
+    // Bottom CTA
+    {
+      id: "cta",
+      type: "text",
+      x: 100,
+      y: 1100,
+      w: 800,
+      h: 100,
+      text: "SHOP NOW →",
+      fontFamily: "system-ui",
+      fontWeight: 900,
+      fontSize: 52,
+      lineHeight: 1,
+      letterSpacing: 3,
+      align: "center",
+      color: "#fbbf24"
+    }
+  ]
+};
