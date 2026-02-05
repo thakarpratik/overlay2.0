@@ -12,114 +12,57 @@ export async function POST(request: Request) {
       );
     }
 
-    // Option 1: Mailchimp
-    // const MAILCHIMP_API_KEY = process.env.MAILCHIMP_API_KEY;
-    // const MAILCHIMP_LIST_ID = process.env.MAILCHIMP_LIST_ID;
-    // const MAILCHIMP_SERVER_PREFIX = process.env.MAILCHIMP_SERVER_PREFIX; // e.g., 'us1'
-    
-    // const response = await fetch(
-    //   `https://${MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0/lists/${MAILCHIMP_LIST_ID}/members`,
-    //   {
-    //     method: 'POST',
-    //     headers: {
-    //       Authorization: `Bearer ${MAILCHIMP_API_KEY}`,
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //       email_address: email,
-    //       status: 'subscribed',
-    //       tags: ['OverlayTool'],
-    //     }),
-    //   }
-    // );
+    const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
-    // Option 2: ConvertKit
-    // const CONVERTKIT_API_KEY = process.env.CONVERTKIT_API_KEY;
-    // const CONVERTKIT_FORM_ID = process.env.CONVERTKIT_FORM_ID;
-    
-    // const response = await fetch(
-    //   `https://api.convertkit.com/v3/forms/${CONVERTKIT_FORM_ID}/subscribe`,
-    //   {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //       api_key: CONVERTKIT_API_KEY,
-    //       email: email,
-    //       tags: ['OverlayTool User'],
-    //     }),
-    //   }
-    // );
+    // Send welcome email with Resend (no audience needed!)
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'OverlayTool <onboarding@resend.dev>', // Use resend.dev for testing
+        to: [email],
+        subject: 'Welcome to OverlayTool! 🎨',
+        html: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+            <h1 style="color: #6366f1;">Welcome to OverlayTool!</h1>
+            <p>Thanks for signing up. You're all set to start creating beautiful overlays.</p>
+            <p>Here's what you can do:</p>
+            <ul>
+              <li>Create unlimited overlays</li>
+              <li>Export instantly</li>
+              <li>No tracking, ever</li>
+            </ul>
+            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/tool" 
+               style="display: inline-block; background: #6366f1; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin-top: 16px;">
+              Start Creating →
+            </a>
+            <p style="color: #6b7280; font-size: 14px; margin-top: 32px;">
+              OverlayTool Team
+            </p>
+          </div>
+        `,
+      }),
+    });
 
-    // Option 3: Beehiiv
-    // const BEEHIIV_API_KEY = process.env.BEEHIIV_API_KEY;
-    // const BEEHIIV_PUBLICATION_ID = process.env.BEEHIIV_PUBLICATION_ID;
-    
-    // const response = await fetch(
-    //   `https://api.beehiiv.com/v2/publications/${BEEHIIV_PUBLICATION_ID}/subscriptions`,
-    //   {
-    //     method: 'POST',
-    //     headers: {
-    //       Authorization: `Bearer ${BEEHIIV_API_KEY}`,
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //       email: email,
-    //       reactivate_existing: false,
-    //       send_welcome_email: true,
-    //       utm_source: 'OverlayTool',
-    //       utm_medium: 'tool_signup',
-    //     }),
-    //   }
-    // );
+    const data = await response.json();
 
-    // Option 4: Resend (simplest for developers)
-    // const RESEND_API_KEY = process.env.RESEND_API_KEY;
-    // const RESEND_AUDIENCE_ID = process.env.RESEND_AUDIENCE_ID;
-    
-    // const response = await fetch(
-    //   'https://api.resend.com/audiences/' + RESEND_AUDIENCE_ID + '/contacts',
-    //   {
-    //     method: 'POST',
-    //     headers: {
-    //       Authorization: `Bearer ${RESEND_API_KEY}`,
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //       email: email,
-    //       unsubscribed: false,
-    //     }),
-    //   }
-    // );
+    if (!response.ok) {
+      console.error('Resend error:', data);
+      throw new Error('Failed to send welcome email');
+    }
 
-    // Option 5: Loops
-    // const LOOPS_API_KEY = process.env.LOOPS_API_KEY;
-    
-    // const response = await fetch(
-    //   'https://app.loops.so/api/v1/contacts/create',
-    //   {
-    //     method: 'POST',
-    //     headers: {
-    //       Authorization: `Bearer ${LOOPS_API_KEY}`,
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //       email: email,
-    //       source: 'OverlayTool',
-    //       subscribed: true,
-    //     }),
-    //   }
-    // );
+    console.log('Email sent successfully:', email);
 
-    // For now, just log it (uncomment one of the above)
-    console.log('Email collected:', email);
+    // Optional: Store in your database here
+    // await db.emails.create({ email, createdAt: new Date() });
 
-    // Return success
     return NextResponse.json(
       { 
         success: true, 
-        message: 'Email collected successfully',
+        message: 'Welcome email sent!',
         email: email 
       },
       { status: 200 }
