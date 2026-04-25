@@ -47,88 +47,84 @@ export default function EmailGate() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: '#0c0e14' }}>
-      <div className="w-full max-w-md px-6">
+    <div style={{
+      minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: '#050507', position: 'relative', overflow: 'hidden', padding: '24px',
+    }}>
+      {/* Ambient orbs */}
+      <div style={{ position: 'absolute', top: '-15%', left: '-10%', width: '50%', height: '50%', background: 'radial-gradient(ellipse, rgba(99,102,241,.12) 0%, transparent 70%)', filter: 'blur(50px)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: '-10%', right: '-5%', width: '35%', height: '35%', background: 'radial-gradient(ellipse, rgba(236,72,153,.07) 0%, transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
+
+      <div style={{ width: '100%', maxWidth: 420, position: 'relative', zIndex: 1 }}>
         {/* Logo */}
-        <div className="text-center mb-8">
-          <img 
-            src="/layerNow_Logo.svg" 
-            alt="OverlayTool" 
-            style={{ height: 60, width: 'auto', margin: '0 auto' }}
-          />
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <img src="/layerNow_Logo.svg" alt="OverlayNow" style={{ height: 52, width: 'auto', margin: '0 auto' }} />
         </div>
 
         {/* Card */}
-        <div 
-          className="rounded-3xl p-8 shadow-2xl"
-          style={{ 
-            background: 'rgba(30,32,42,0.6)', 
-            border: '1px solid rgba(255,255,255,0.1)',
-            backdropFilter: 'blur(20px)'
-          }}
-        >
-          <h1 
-            className="text-3xl font-bold text-center mb-3"
-            style={{ 
-              fontFamily: "'Playfair Display', Georgia, serif",
-              color: '#ffffff'
-            }}
-          >
-            Get Started Free
-          </h1>
-          
-          <p className="text-center mb-8" style={{ color: '#9ca3af', fontSize: '0.95rem' }}>
+        <div style={{
+          background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+          borderRadius: 24, padding: '36px 32px',
+          backdropFilter: 'blur(20px)', boxShadow: '0 32px 80px rgba(0,0,0,.5)',
+        }}>
+          <h1 style={{
+            fontFamily: "'Space Grotesk', system-ui, sans-serif",
+            fontSize: '1.75rem', fontWeight: 700, color: '#f8fafc',
+            textAlign: 'center', marginBottom: 10, letterSpacing: '-0.025em',
+          }}>Get Started Free</h1>
+
+          <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '.9rem', marginBottom: 28, fontFamily: "'DM Sans', system-ui, sans-serif", lineHeight: 1.6 }}>
             Enter your email to start creating beautiful overlays
           </p>
 
           <form onSubmit={handleSubmit}>
-            <div className="mb-6">
+            <div style={{ marginBottom: 16 }}>
               <input
                 type="email"
                 placeholder="your@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
-                className="w-full px-5 py-4 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
                 style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  fontSize: '1rem'
+                  width: '100%', padding: '13px 18px', borderRadius: 12,
+                  background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
+                  color: '#f8fafc', fontSize: '1rem', outline: 'none',
+                  fontFamily: "'DM Sans', system-ui, sans-serif",
+                  boxSizing: 'border-box', transition: 'border-color .2s',
                 }}
+                onFocus={e => (e.target as HTMLElement).style.borderColor = 'rgba(99,102,241,0.6)'}
+                onBlur={e => (e.target as HTMLElement).style.borderColor = 'rgba(255,255,255,0.1)'}
               />
               {error && (
-                <p className="mt-2 text-sm" style={{ color: '#ef4444' }}>
-                  {error}
-                </p>
+                <p style={{ marginTop: 8, fontSize: '.8rem', color: '#ef4444', fontFamily: "'DM Sans', system-ui, sans-serif" }}>{error}</p>
               )}
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-4 rounded-xl font-semibold text-white transition-all duration-200 hover:opacity-90"
-              style={{
-                background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
-                fontSize: '1rem',
-                opacity: loading ? 0.6 : 1,
-                cursor: loading ? 'not-allowed' : 'pointer'
-              }}
-            >
-              {loading ? 'Please wait...' : 'Continue to Tool →'}
+            <button type="submit" disabled={loading} style={{
+              width: '100%', padding: '13px',
+              background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+              color: '#fff', fontFamily: "'Space Grotesk', system-ui, sans-serif",
+              fontWeight: 600, fontSize: '1rem', borderRadius: 999,
+              border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.6 : 1,
+              boxShadow: '0 4px 24px rgba(99,102,241,.4)',
+              transition: 'opacity .2s, box-shadow .2s',
+            }}>
+              {loading ? 'Please wait…' : 'Continue to Tool →'}
             </button>
           </form>
 
-          <p className="mt-6 text-center text-xs" style={{ color: '#6b7280' }}>
+          <p style={{ marginTop: 20, textAlign: 'center', fontSize: '.72rem', color: '#475569', fontFamily: "'DM Sans', system-ui, sans-serif" }}>
             No credit card required. Start creating instantly.
           </p>
         </div>
 
-        {/* Features */}
-        <div className="mt-8 grid grid-cols-3 gap-4 text-center">
-          {['No Tracking', 'Instant Export', 'Free Forever'].map((feature) => (
-            <div key={feature}>
-              <p className="text-sm font-medium" style={{ color: '#ffffff' }}>✓</p>
-              <p className="text-xs mt-1" style={{ color: '#6b7280' }}>{feature}</p>
+        {/* Trust row */}
+        <div style={{ marginTop: 28, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, textAlign: 'center' }}>
+          {[['No Tracking', '#22c55e'], ['Instant Export', '#818cf8'], ['Free Forever', '#f59e0b']].map(([label, color]) => (
+            <div key={label}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" style={{ margin: '0 auto 6px', display: 'block' }}><path d="M3 8l3.5 3.5L13 4"/></svg>
+              <p style={{ fontSize: '.72rem', color: '#64748b', fontFamily: "'DM Sans', system-ui, sans-serif", fontWeight: 500 }}>{label}</p>
             </div>
           ))}
         </div>

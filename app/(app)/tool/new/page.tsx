@@ -42,7 +42,7 @@ export default function NewProjectPage() {
         <span className="text-xs font-semibold tracking-widest uppercase" style={{ color: '#6366f1' }}>New project</span>
       </div>
       <h1 className="text-white tracking-tight mt-2"
-        style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 'clamp(1.75rem, 3vw, 2.25rem)' }}>
+        style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif", fontSize: 'clamp(1.75rem, 3vw, 2.25rem)' }}>
         Set up your project
       </h1>
       <p className="mt-1.5 text-sm" style={{ color: '#6b7280' }}>
@@ -60,7 +60,7 @@ export default function NewProjectPage() {
               style={{ background: files.length > 0 ? 'linear-gradient(135deg,#22c55e,#16a34a)' : 'linear-gradient(135deg,#6366f1,#4f46e5)' }}>
               {files.length > 0 ? '✓' : '1'}
             </span>
-            <h2 className="text-sm font-semibold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-sm font-semibold text-white" style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}>
               Upload images
             </h2>
           </div>
@@ -73,7 +73,7 @@ export default function NewProjectPage() {
           <div className="flex items-center gap-2.5 mb-2">
             <span className="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold text-white"
               style={{ background: 'linear-gradient(135deg,#6366f1,#4f46e5)' }}>2</span>
-            <h2 className="text-sm font-semibold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-sm font-semibold text-white" style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}>
               Choose a template
             </h2>
           </div>
@@ -122,7 +122,7 @@ export default function NewProjectPage() {
                     </svg>
                   </div>
 
-                  <div className="text-xs font-semibold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{t.name}</div>
+                  <div className="text-xs font-semibold text-white" style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}>{t.name}</div>
                   <div className="text-xs mt-0.5" style={{ color: '#6b7280' }}>{t.category}</div>
                 </button>
               );

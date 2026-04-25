@@ -1,51 +1,64 @@
 import Link from 'next/link'
 
+const LINKS = [
+  { label: 'About', href: '/about' },
+  { label: 'Features', href: '/features' },
+  { label: 'Pricing', href: '/pricing' },
+  { label: 'Templates', href: '/templates' },
+  { label: 'Privacy', href: '/privacy' },
+  { label: 'Terms', href: '/terms' },
+  { label: 'Contact', href: '/contact' },
+]
+
 export default function Footer() {
   return (
-    <footer style={{ 
-      background: '#0c0e14', 
-      borderTop: '1px solid rgba(255,255,255,0.07)', 
-      padding: '32px 24px' 
+    <footer style={{
+      background: '#050507',
+      borderTop: '1px solid rgba(255,255,255,0.07)',
+      padding: '40px 24px',
     }}>
-      <div style={{ 
-        maxWidth: 1200, 
-        margin: '0 auto', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'space-between', 
-        flexWrap: 'wrap', 
-        gap: 16 
+      <div style={{
+        maxWidth: 1160, margin: '0 auto',
+        display: 'flex', flexDirection: 'column', gap: 28,
       }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-          <img 
-            src="/layerNow_Logo.svg" 
-            alt="OverlayTool" 
-            style={{ height: 36, width: 'auto' }}
-          />
-        </Link>
-        
-        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-          {['About', 'Features', 'Pricing', 'Privacy', 'Terms', 'Contact'].map(link => (
-            <Link 
-              key={link} 
-              href={`/${link.toLowerCase()}`} 
-              style={{ 
-                fontSize: '0.75rem', 
-                color: '#6b7280', 
-                textDecoration: 'none', 
-                transition: 'color 0.2s' 
+        <div style={{
+          display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between', flexWrap: 'wrap', gap: 20,
+        }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+            <img src="/layerNow_Logo.svg" alt="OverlayNow" style={{ height: 34, width: 'auto' }} />
+          </Link>
+
+          <nav style={{ display: 'flex', gap: 4, flexWrap: 'wrap', alignItems: 'center' }}>
+            {LINKS.map(link => (
+              <Link key={link.href} href={link.href} style={{
+                fontSize: '.75rem', color: '#64748b', textDecoration: 'none',
+                padding: '4px 10px', borderRadius: 6,
+                fontFamily: "'DM Sans', system-ui, sans-serif", fontWeight: 500,
+                transition: 'color .2s, background .2s',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = '#9ca3af')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = '#6b7280')}
-            >
-              {link}
-            </Link>
-          ))}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#94a3b8'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,.05)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#64748b'; (e.currentTarget as HTMLElement).style.background = 'transparent' }}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </div>
-        
-        <span style={{ fontSize: '0.7rem', color: '#6b7280' }}>
-          © {new Date().getFullYear()} OverlayTool. All rights reserved.
-        </span>
+
+        <div style={{ height: 1, background: 'rgba(255,255,255,0.06)' }} />
+
+        <div style={{
+          display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between', flexWrap: 'wrap', gap: 12,
+        }}>
+          <span style={{ fontSize: '.72rem', color: '#475569', fontFamily: "'DM Sans', system-ui, sans-serif" }}>
+            © {new Date().getFullYear()} OverlayNow. All rights reserved.
+          </span>
+          <span style={{ fontSize: '.72rem', color: '#475569', fontFamily: "'DM Sans', system-ui, sans-serif" }}>
+            Built for creators. No account required.
+          </span>
+        </div>
       </div>
     </footer>
   )

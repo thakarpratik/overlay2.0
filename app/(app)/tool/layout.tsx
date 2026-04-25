@@ -4,22 +4,25 @@ import Link from "next/link";
 
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen" style={{ background: '#0f1117' }}>
-      {/* ── sticky top bar ── */}
-      <header className="sticky top-0 z-40" style={{ background: 'rgba(15,17,23,0.75)', backdropFilter: 'blur(14px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+    <div className="min-h-screen" style={{ background: '#050507' }}>
+      <header className="sticky top-0 z-40" style={{ background: 'rgba(5,5,7,0.82)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
         <div className="mx-auto max-w-7xl px-5 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
-            {/* logo */}
-            <img 
-              src="/layerNow_Logo.svg" 
-              alt="OverlayTool" 
-              style={{ height: 36, width: 'auto' }}
-              className="group-hover:opacity-80 transition-opacity"
+            <img
+              src="/layerNow_Logo.svg"
+              alt="OverlayNow"
+              style={{ height: 34, width: 'auto', transition: 'opacity .2s' }}
+              className="group-hover:opacity-75"
             />
           </Link>
 
-          <span className="text-xs font-medium uppercase tracking-widest px-3 py-1 rounded-full"
-            style={{ background: 'rgba(99,102,241,0.12)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.2)' }}>
+          <span style={{
+            fontFamily: "'Space Grotesk', system-ui, sans-serif",
+            fontSize: '.68rem', fontWeight: 700, letterSpacing: '.1em',
+            textTransform: 'uppercase', padding: '4px 14px', borderRadius: 999,
+            background: 'rgba(99,102,241,0.12)', color: '#818cf8',
+            border: '1px solid rgba(99,102,241,0.22)',
+          }}>
             Editor
           </span>
         </div>

@@ -1,303 +1,355 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-/* ─────────────────────────────────────────────
-   DESIGN TOKENS (extracted from existing brand)
-   ───────────────────────────────────────────── */
-// Primary: #6366f1 (indigo)  Accent: #818cf8 (lighter indigo)
-// Pink: #ec4899  Green: #22c55e  Orange: #f97316
-// Bg dark: #0c0e14  Section: #0f1117  Card: rgba(30,32,42,0.55)
-// Text: #fff  Muted: #6b7280  Sub: #9ca3af
-// Font display: 'Playfair Display', Georgia, serif
-// Font body: system-ui (kept lean, no extra import needed)
-
-/* ─────────────────────────────────────────────
-   GLOBAL STYLES (injected once)
-   ───────────────────────────────────────────── */
+/* ─── GLOBAL STYLES ─────────────────────────────────────────────── */
 const GLOBAL_CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --clr-bg:        #0c0e14;
-    --clr-section:   #0f1117;
-    --clr-card:      rgba(30,32,42,0.55);
-    --clr-border:    rgba(255,255,255,0.07);
-    --clr-primary:   #6366f1;
-    --clr-accent:    #818cf8;
-    --clr-pink:      #ec4899;
-    --clr-green:     #22c55e;
-    --clr-text:      #ffffff;
-    --clr-muted:     #6b7280;
-    --clr-sub:       #9ca3af;
-    --font-display: 'Playfair Display', Georgia, serif;
-    --font-body:    system-ui, -apple-system, sans-serif;
+    --bg:        #050507;
+    --bg2:       #080a10;
+    --card:      rgba(255,255,255,0.04);
+    --card-hov:  rgba(255,255,255,0.07);
+    --border:    rgba(255,255,255,0.08);
+    --border-hov:rgba(255,255,255,0.18);
+    --primary:   #6366f1;
+    --primary2:  #4f46e5;
+    --accent:    #818cf8;
+    --pink:      #ec4899;
+    --green:     #22c55e;
+    --amber:     #f59e0b;
+    --text:      #f8fafc;
+    --muted:     #94a3b8;
+    --sub:       #64748b;
+    --font-h:   'Space Grotesk', system-ui, sans-serif;
+    --font-b:   'DM Sans', system-ui, sans-serif;
   }
 
   html { scroll-behavior: smooth; }
-  body { background: var(--clr-bg); color: var(--clr-text); font-family: var(--font-body); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-
-  /* ── Scroll-triggered reveal ── */
-  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1); }
-  .reveal.visible { opacity: 1; transform: translateY(0); }
-
-  /* ── Sticky nav ── */
-  .sticky-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between;
-    background: rgba(12,14,20,0); backdrop-filter: blur(0px); border-bottom: 1px solid transparent;
-    transition: background 0.4s, backdrop-filter 0.4s, border-color 0.4s; }
-  .sticky-nav.scrolled { background: rgba(12,14,20,0.82); backdrop-filter: blur(16px); border-color: var(--clr-border); }
-  
-  /* ── Nav responsive ── */
-  @media (min-width: 768px) {
-    .md-nav-links { display: flex !important; }
-    .new-project-btn { display: inline-flex !important; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-b);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
 
-  /* ── Ticker ── */
-  @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-  .ticker-track { display: flex; animation: ticker 28s linear infinite; }
-  .ticker-track:hover { animation-play-state: paused; }
+  .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
 
-  /* ── Hero text animate-in ── */
-  @keyframes heroSlideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-  .hero-line { opacity: 0; animation: heroSlideUp 0.8s cubic-bezier(.4,0,.2,1) forwards; }
-  .hero-line:nth-child(1) { animation-delay: 0.1s; }
-  .hero-line:nth-child(2) { animation-delay: 0.25s; }
-  .hero-line:nth-child(3) { animation-delay: 0.4s; }
-  .hero-line:nth-child(4) { animation-delay: 0.55s; }
+  @keyframes slideUp { from { opacity:0; transform:translateY(44px) } to { opacity:1; transform:none } }
+  .su  { opacity:0; animation: slideUp .9s cubic-bezier(.4,0,.2,1) forwards; }
+  .su1 { animation-delay:.05s }
+  .su2 { animation-delay:.18s }
+  .su3 { animation-delay:.30s }
+  .su4 { animation-delay:.44s }
+  .su5 { animation-delay:.56s }
 
-  /* ── Text overlay shimmer ── */
-  @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
-  .shimmer-text {
-    background: linear-gradient(90deg, #fff 0%, #818cf8 40%, #fff 60%, #fff 100%);
-    background-size: 200% auto;
+  .grad {
+    background: linear-gradient(135deg, #fff 0%, #818cf8 50%, #fff 100%);
+    background-size: 200%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: shimmer 3s linear infinite;
+    animation: gradShift 4s linear infinite;
+  }
+  @keyframes gradShift { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
+
+  @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+  .ticker-inner { display:flex; animation:ticker 32s linear infinite; }
+  .ticker-inner:hover { animation-play-state:paused; }
+
+  .glass {
+    background: var(--card);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    transition: background .25s, border-color .25s, transform .3s, box-shadow .3s;
+  }
+  .glass:hover { background: var(--card-hov); border-color: var(--border-hov); }
+
+  .feat-card { transition: border-color .3s, transform .3s, box-shadow .3s; }
+  .feat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 48px rgba(0,0,0,.5); }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, var(--primary), var(--primary2));
+    color: #fff; font-family: var(--font-h); font-size: .875rem; font-weight: 600;
+    padding: 12px 28px; border-radius: 999px; text-decoration: none;
+    box-shadow: 0 4px 24px rgba(99,102,241,.35);
+    transition: box-shadow .25s, transform .2s;
+    cursor: pointer; border: none;
+  }
+  .btn-primary:hover { box-shadow: 0 8px 36px rgba(99,102,241,.55); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--muted); font-family: var(--font-b); font-size: .875rem; font-weight: 500;
+    padding: 12px 24px; border-radius: 999px; text-decoration: none;
+    border: 1px solid var(--border); background: rgba(255,255,255,.03);
+    transition: background .2s, color .2s, border-color .2s; cursor: pointer;
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,.07); color: var(--text); border-color: var(--border-hov); }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 14px; border-radius: 999px;
+    border: 1px solid var(--border); background: rgba(255,255,255,.04);
+    font-size: .7rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--muted); backdrop-filter: blur(10px);
   }
 
-  /* ── Feature icon glow on hover ── */
-  .feature-card { transition: border-color 0.3s, transform 0.3s; }
-  .feature-card:hover { border-color: rgba(99,102,241,0.35); transform: translateY(-2px); }
-  .feature-icon { transition: box-shadow 0.3s; }
-  .feature-card:hover .feature-icon { box-shadow: 0 0 20px rgba(99,102,241,0.3); }
+  .divider { width: 75%; height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 0 auto; }
+  .section { padding: 96px 0; position: relative; }
 
-  /* ── CTA button glow ── */
-  .cta-btn { transition: box-shadow 0.3s, transform 0.2s; }
-  .cta-btn:hover { box-shadow: 0 6px 32px rgba(99,102,241,0.5); transform: translateY(-1px); }
-  .cta-btn:active { transform: translateY(0); }
+  @keyframes ping { 75%,100%{transform:scale(2);opacity:0} }
+  .ping { animation: ping 1.4s cubic-bezier(0,0,.2,1) infinite; }
+
+  .bento-card { position:relative; overflow:hidden; }
+
+  #progress-bar {
+    position:fixed; top:0; left:0; height:2px; z-index:200;
+    background: linear-gradient(90deg, var(--primary), var(--pink));
+    transition: width .1s linear;
+  }
+
+  @media (min-width:768px) {
+    .md-flex { display:flex !important; }
+    .md-3col { grid-template-columns: repeat(3,1fr) !important; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal, .su, .ticker-inner, .grad { animation:none !important; transition:none !important; opacity:1 !important; transform:none !important; }
+  }
 `
 
 function GlobalStyles() {
   return <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
 }
 
-/* ─────────────────────────────────────────────
-   SCROLL REVEAL HOOK
-   ───────────────────────────────────────────── */
 function useReveal(ref: React.RefObject<HTMLDivElement>, delay = 0) {
   useEffect(() => {
     const el = ref.current
     if (!el) return
     const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setTimeout(() => el.classList.add('visible'), delay); obs.disconnect() } },
-      { threshold: 0.15 }
+      ([e]) => { if (e.isIntersecting) { setTimeout(() => el.classList.add('in'), delay); obs.disconnect() } },
+      { threshold: 0.12 }
     )
     obs.observe(el)
     return () => obs.disconnect()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [delay])
 }
 
-/* ─────────────────────────────────────────────
-   STICKY NAV
-   ───────────────────────────────────────────── */
-function StickyNav() {
+/* ─── SCROLL PROGRESS ───────────────────────────────────────────── */
+function ScrollProgress() {
+  const [w, setW] = useState(0)
+  useEffect(() => {
+    const fn = () => {
+      const el = document.documentElement
+      setW((el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100)
+    }
+    window.addEventListener('scroll', fn, { passive: true })
+    return () => window.removeEventListener('scroll', fn)
+  }, [])
+  return <div id="progress-bar" style={{ width: `${w}%` }} />
+}
+
+/* ─── NAVBAR ─────────────────────────────────────────────────────── */
+function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    const fn = () => setScrolled(window.scrollY > 60)
+    window.addEventListener('scroll', fn, { passive: true })
+    return () => window.removeEventListener('scroll', fn)
   }, [])
 
   return (
-    <nav className={`sticky-nav ${scrolled ? 'scrolled' : ''}`}>
-      {/* Logo */}
-      <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-        <img 
-          src="/layerNow_Logo.svg" 
-          alt="OverlayTool" 
-          style={{ height: 44, width: 'auto' }}
-        />
+    <nav style={{
+      position: 'fixed', top: 16, left: '50%', transform: 'translateX(-50%)',
+      width: 'calc(100% - 48px)', maxWidth: 1100, zIndex: 100,
+      padding: '10px 20px', borderRadius: 999,
+      background: scrolled ? 'rgba(5,5,7,0.78)' : 'rgba(5,5,7,0)',
+      border: scrolled ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent',
+      backdropFilter: scrolled ? 'blur(20px)' : 'none',
+      transition: 'background .4s, border-color .4s, backdrop-filter .4s',
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    }}>
+      <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+        <img src="/layerNow_Logo.svg" alt="OverlayNow" style={{ height: 36, width: 'auto' }} />
       </Link>
 
-      {/* Center nav links - hidden on mobile */}
-      <div style={{ display: 'none', gap: 4, position: 'absolute', left: '50%', transform: 'translateX(-50%)' }} className="md-nav-links">
-        {[
-          { label: 'Templates', href: '/templates' },
-          { label: 'Features', href: '/features' },
-          { label: 'Pricing', href: '/pricing' },
-        ].map(link => (
-          <Link key={link.href} href={link.href} style={{
-            padding: '6px 14px', borderRadius: 8, fontSize: '0.82rem', fontWeight: 500,
-            color: 'var(--clr-sub)', textDecoration: 'none', transition: 'background 0.2s, color 0.2s'
+      <div className="md-flex" style={{
+        display: 'none', gap: 4,
+        position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+      }}>
+        {[['Templates', '/templates'], ['Features', '/features'], ['Pricing', '/pricing']].map(([label, href]) => (
+          <Link key={href} href={href} style={{
+            padding: '7px 16px', borderRadius: 999, fontSize: '.82rem', fontWeight: 500,
+            color: 'var(--muted)', textDecoration: 'none', fontFamily: 'var(--font-b)',
+            transition: 'color .2s, background .2s',
           }}
-            onMouseEnter={e => { (e.target as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; (e.target as HTMLElement).style.color = 'var(--clr-text)' }}
-            onMouseLeave={e => { (e.target as HTMLElement).style.background = 'transparent'; (e.target as HTMLElement).style.color = 'var(--clr-sub)' }}
-          >
-            {link.label}
-          </Link>
+            onMouseEnter={e => { (e.target as HTMLElement).style.color = 'var(--text)'; (e.target as HTMLElement).style.background = 'rgba(255,255,255,.06)' }}
+            onMouseLeave={e => { (e.target as HTMLElement).style.color = 'var(--muted)'; (e.target as HTMLElement).style.background = 'transparent' }}
+          >{label}</Link>
         ))}
       </div>
 
-      {/* Right CTAs */}
       <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-        <Link href="/tool/new" className="new-project-btn" style={{
-          display: 'none',
-          padding: '7px 16px', borderRadius: 10, fontSize: '0.8rem', fontWeight: 500,
-          color: 'var(--clr-text)', textDecoration: 'none', border: '1px solid var(--clr-border)',
-          background: 'rgba(255,255,255,0.03)', transition: 'background 0.2s'
-        }}
-          onMouseEnter={e => (e.target as HTMLElement).style.background = 'rgba(255,255,255,0.06)'}
-          onMouseLeave={e => (e.target as HTMLElement).style.background = 'rgba(255,255,255,0.03)'}
-        >
+        <Link href="/tool/new" className="md-flex btn-ghost" style={{ display: 'none', padding: '8px 18px', fontSize: '.78rem' }}>
           New project
         </Link>
-        <Link href="/tool" className="cta-btn" style={{
-          display: 'inline-flex',
-          alignItems: 'center', gap: '6px', background: 'linear-gradient(135deg, var(--clr-primary), #4f46e5)',
-          color: '#fff', fontSize: '0.8rem', fontWeight: 600, padding: '8px 18px', borderRadius: 10,
-          textDecoration: 'none', boxShadow: '0 4px 20px rgba(99,102,241,0.3)'
-        }}>
+        <Link href="/tool" className="btn-primary" style={{ padding: '9px 20px', fontSize: '.8rem' }}>
           Open Tool
+          <ArrowRight size={14} />
         </Link>
       </div>
     </nav>
   )
 }
 
-/* ─────────────────────────────────────────────
-   HERO SECTION
-   ───────────────────────────────────────────── */
+/* ─── HERO ───────────────────────────────────────────────────────── */
 function Hero() {
   return (
     <section style={{
-      minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
-      background: 'var(--clr-bg)', position: 'relative', overflow: 'hidden', paddingTop: 100, paddingBottom: 80
+      minHeight: '100vh', display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center',
+      background: 'var(--bg)', position: 'relative', overflow: 'hidden',
+      padding: '120px 24px 80px',
     }}>
-      {/* Ambient gradient blobs */}
-      <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '60%', height: '60%', background: 'radial-gradient(ellipse, rgba(99,102,241,0.12) 0%, transparent 70%)', pointerEvents: 'none', filter: 'blur(40px)' }} />
-      <div style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '45%', height: '45%', background: 'radial-gradient(ellipse, rgba(236,72,153,0.07) 0%, transparent 70%)', pointerEvents: 'none', filter: 'blur(50px)' }} />
+      {/* Ambient orbs */}
+      <div style={{ position: 'absolute', top: '-10%', left: '-15%', width: '55%', height: '55%', background: 'radial-gradient(ellipse, rgba(99,102,241,.14) 0%, transparent 68%)', filter: 'blur(50px)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: '-5%', right: '-10%', width: '40%', height: '40%', background: 'radial-gradient(ellipse, rgba(236,72,153,.08) 0%, transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: '30%', right: '5%', width: '25%', height: '25%', background: 'radial-gradient(ellipse, rgba(129,140,248,.06) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
 
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', width: '100%', textAlign: 'center' }}>
+      {/* Dot grid */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none', opacity: .3,
+        backgroundImage: 'radial-gradient(rgba(255,255,255,.12) 1px, transparent 1px)',
+        backgroundSize: '40px 40px',
+        maskImage: 'radial-gradient(ellipse 80% 70% at 50% 0%, black 40%, transparent 100%)',
+        WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at 50% 0%, black 40%, transparent 100%)',
+      }} />
 
-        {/* Centered Headline */}
-        <h1 className="hero-line" style={{ 
-          fontFamily: 'var(--font-display)', 
-          fontSize: 'clamp(3rem, 7vw, 6rem)', 
-          lineHeight: 1.05, 
-          fontWeight: 700, 
-          color: 'var(--clr-text)', 
-          letterSpacing: '-0.03em',
-          marginBottom: 60
+      <div style={{ maxWidth: 860, textAlign: 'center', position: 'relative', zIndex: 1 }}>
+        {/* Badge */}
+        <div className="su su1" style={{ marginBottom: 28 }}>
+          <span className="badge">
+            <span style={{ position: 'relative', display: 'inline-flex', width: 8, height: 8 }}>
+              <span className="ping" style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'var(--green)', opacity: .75 }} />
+              <span style={{ position: 'relative', borderRadius: '50%', width: 8, height: 8, background: 'var(--green)', display: 'inline-block' }} />
+            </span>
+            Free to use · No account required
+          </span>
+        </div>
+
+        {/* Headline */}
+        <h1 className="su su2" style={{
+          fontFamily: 'var(--font-h)',
+          fontSize: 'clamp(2.8rem, 7vw, 5.5rem)',
+          fontWeight: 700, lineHeight: 1.06, letterSpacing: '-0.035em',
+          color: 'var(--text)', marginBottom: 28,
         }}>
-          Put <span className="shimmer-text">words</span> on images.
+          Put <span className="grad">words</span> on images.<br />
+          <span style={{ color: 'var(--muted)', fontWeight: 500, fontSize: '88%' }}>In seconds. For free.</span>
         </h1>
 
-        {/* Video Frame */}
-        <div className="hero-line preview-pulse" style={{
-          maxWidth: 900,
-          margin: '0 auto',
-          borderRadius: 20,
-          overflow: 'hidden',
-          boxShadow: '0 24px 60px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.1)',
-          background: 'var(--clr-card)',
-          border: '1px solid var(--clr-border)',
-          position: 'relative'
+        {/* Sub */}
+        <p className="su su3" style={{
+          fontSize: 'clamp(1rem, 2.2vw, 1.2rem)', color: 'var(--muted)',
+          lineHeight: 1.7, maxWidth: 560, margin: '0 auto 40px', fontFamily: 'var(--font-b)',
         }}>
-          <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
-            <iframe
-              src="https://www.youtube.com/embed/6GY8CoLyxoE?si=rXA1JSzrhuUv9Jnb&controls=0&autoplay=1&mute=1&loop=1&playlist=6GY8CoLyxoE"
-              title="OverlayTool Demo"
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                border: 'none'
-              }}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerPolicy="strict-origin-when-cross-origin"
-              allowFullScreen
-            />
-          </div>
-        </div>
+          OverlayNow is the fastest way to add text, logos, and graphics to any image — no sign-up, no bloat, just open and create.
+        </p>
 
         {/* CTAs */}
-        <div className="hero-line" style={{ marginTop: 48, display: 'flex', gap: 12, alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link href="/tool" className="cta-btn" style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg, var(--clr-primary), #4f46e5)',
-            color: '#fff', fontSize: '0.95rem', fontWeight: 600, padding: '14px 32px', borderRadius: 999,
-            textDecoration: 'none', boxShadow: '0 4px 24px rgba(99,102,241,0.35)'
-          }}>
+        <div className="su su4" style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 56 }}>
+          <Link href="/tool" className="btn-primary" style={{ padding: '14px 32px', fontSize: '1rem' }}>
             Start creating free
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 8h10M9 4l4 4-4 4" /></svg>
+            <ArrowRight size={16} />
           </Link>
-          <Link href="#showcase" style={{
-            fontSize: '0.85rem', color: 'var(--clr-sub)', textDecoration: 'none', fontWeight: 500,
-            display: 'inline-flex', alignItems: 'center', gap: 4, transition: 'color 0.2s'
-          }}>
-            See examples <span style={{ fontSize: '0.7rem' }}>↓</span>
+          <Link href="/templates" className="btn-ghost" style={{ padding: '14px 26px', fontSize: '1rem' }}>
+            Browse templates
           </Link>
         </div>
 
-        {/* Trust badges */}
-        <div className="hero-line" style={{ marginTop: 48, display: 'flex', gap: 32, alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>
-          {[
-            { val: '0', label: 'tracking' },
-            { val: '3s', label: 'avg export' },
-            { val: '∞', label: 'exports' },
-          ].map(s => (
-            <div key={s.label} style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-              <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', fontWeight: 700, color: 'var(--clr-accent)' }}>{s.val}</span>
-              <span style={{ fontSize: '0.7rem', color: 'var(--clr-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{s.label}</span>
+        {/* Stats */}
+        <div className="su su5" style={{ display: 'flex', gap: 40, justifyContent: 'center', flexWrap: 'wrap' }}>
+          {[['∞', 'free exports'], ['3s', 'avg export time'], ['0', 'data collected']].map(([val, label]) => (
+            <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+              <span style={{ fontFamily: 'var(--font-h)', fontSize: '1.6rem', fontWeight: 700, color: 'var(--accent)' }}>{val}</span>
+              <span style={{ fontSize: '.68rem', color: 'var(--sub)', textTransform: 'uppercase', letterSpacing: '.08em', fontWeight: 600 }}>{label}</span>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Video */}
+      <div className="su su5" style={{ width: '100%', maxWidth: 940, marginTop: 64, position: 'relative', zIndex: 1 }}>
+        <div style={{
+          position: 'absolute', top: '10%', left: '10%', right: '10%', bottom: 0,
+          background: 'radial-gradient(ellipse, rgba(99,102,241,.25) 0%, transparent 70%)',
+          filter: 'blur(40px)', zIndex: -1,
+        }} />
+        <div style={{
+          borderRadius: 20, overflow: 'hidden',
+          border: '1px solid rgba(255,255,255,0.1)',
+          boxShadow: '0 32px 80px rgba(0,0,0,.65), 0 0 0 1px rgba(99,102,241,.15)',
+          background: 'var(--bg2)',
+        }}>
+          {/* Chrome bar */}
+          <div style={{
+            height: 40, background: 'rgba(255,255,255,.03)',
+            borderBottom: '1px solid var(--border)',
+            display: 'flex', alignItems: 'center', gap: 7, padding: '0 16px',
+          }}>
+            {['#ef4444', '#f59e0b', '#22c55e'].map(c => (
+              <span key={c} style={{ width: 11, height: 11, borderRadius: '50%', background: c, opacity: .8 }} />
+            ))}
+          </div>
+          <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+            <iframe
+              src="https://www.youtube.com/embed/6GY8CoLyxoE?si=rXA1JSzrhuUv9Jnb&controls=0&autoplay=1&mute=1&loop=1&playlist=6GY8CoLyxoE"
+              title="OverlayNow Demo"
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      </div>
     </section>
   )
 }
 
-/* ─────────────────────────────────────────────
-   SOCIAL PROOF TICKER
-   ───────────────────────────────────────────── */
-const PROOF_ITEMS = [
-  { text: 'Pinterest creators', icon: '📌' },
-  { text: 'Recipe blogs', icon: '🍳' },
-  { text: 'Instagram posts', icon: '📸' },
-  { text: 'Motivational quotes', icon: '✨' },
-  { text: 'Product launches', icon: '🚀' },
-  { text: 'Travel content', icon: '✈️' },
-  { text: 'Email newsletters', icon: '📧' },
-  { text: 'YouTube thumbnails', icon: '▶️' },
+/* ─── TICKER ─────────────────────────────────────────────────────── */
+const TICKER_ITEMS = [
+  { text: 'Pinterest creators', color: '#e60023' },
+  { text: 'Recipe bloggers', color: '#f97316' },
+  { text: 'Instagram posts', color: '#ec4899' },
+  { text: 'Quote graphics', color: '#818cf8' },
+  { text: 'Product launches', color: '#6366f1' },
+  { text: 'Travel content', color: '#22c55e' },
+  { text: 'YouTube thumbnails', color: '#ef4444' },
+  { text: 'Email newsletters', color: '#f59e0b' },
+  { text: 'Brand overlays', color: '#a78bfa' },
 ]
 
 function Ticker() {
-  const doubled = [...PROOF_ITEMS, ...PROOF_ITEMS]
+  const doubled = [...TICKER_ITEMS, ...TICKER_ITEMS]
   return (
-    <div style={{ overflow: 'hidden', padding: '28px 0', borderTop: '1px solid var(--clr-border)', borderBottom: '1px solid var(--clr-border)', background: 'var(--clr-section)' }}>
-      <div className="ticker-track" style={{ display: 'flex', whiteSpace: 'nowrap' }}>
+    <div style={{
+      overflow: 'hidden', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)',
+      padding: '20px 0', background: 'var(--bg2)',
+    }}>
+      <div className="ticker-inner">
         {doubled.map((item, i) => (
-          <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '0 40px', flexShrink: 0 }}>
-            <span style={{ fontSize: '1.1rem' }}>{item.icon}</span>
-            <span style={{ fontSize: '0.82rem', color: 'var(--clr-sub)', fontWeight: 500, letterSpacing: '0.02em' }}>{item.text}</span>
-            <span style={{ color: 'var(--clr-border)', fontSize: '0.5rem' }}>●</span>
+          <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: '0 36px', flexShrink: 0 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: item.color, flexShrink: 0 }} />
+            <span style={{ fontSize: '.78rem', color: 'var(--muted)', fontWeight: 500, whiteSpace: 'nowrap', fontFamily: 'var(--font-b)' }}>{item.text}</span>
           </div>
         ))}
       </div>
@@ -305,184 +357,174 @@ function Ticker() {
   )
 }
 
-/* ─────────────────────────────────────────────
-   INTERACTIVE TEMPLATE SHOWCASE
-   ───────────────────────────────────────────── */
-const CATEGORIES = [
-  {
-    label: 'Recipes', icon: '🍳',
-    items: [
-      { bg: 'linear-gradient(145deg, #f97316, #dc2626 50%, #991b1b)', title: 'The Perfect\nGranola Recipe', sub: '5 ingredients · 20 min' },
-      { bg: 'linear-gradient(140deg, #ea580c, #c2410c 60%, #9a3412)', title: 'Overnight\nOats', sub: '3 min · Make ahead' },
-      { bg: 'linear-gradient(155deg, #ca8a04, #a16207 50%, #854d0e)', title: 'Honey Lemon\nDressing', sub: 'Homemade · 2 min' },
-    ]
-  },
-  {
-    label: 'Quotes', icon: '✨',
-    items: [
-      { bg: 'linear-gradient(160deg, #0d9488, #0f766e 40%, #134e4a)', title: '"Start before\nyou feel ready."', sub: '— Daily Motivation' },
-      { bg: 'linear-gradient(150deg, #7c3aed, #6d28d9 50%, #4c1d95)', title: '"Do what you\ncan, with what\nyou have."', sub: '— T. Roosevelt' },
-      { bg: 'linear-gradient(165deg, #1e40af, #1e3a8a 50%, #1e293b)', title: '"The only way\nis through."', sub: '— Robert Frost' },
-    ]
-  },
-  {
-    label: 'Travel', icon: '✈️',
-    items: [
-      { bg: 'linear-gradient(135deg, #7c3aed, #a78bfa 50%, #c4b5fd)', title: 'Top 5 Hidden\nGems in Bali', sub: 'Travel · Indonesia' },
-      { bg: 'linear-gradient(140deg, #0891b2, #0e7490 50%, #155e75)', title: 'Tokyo in\n48 Hours', sub: 'Japan · Budget trip' },
-      { bg: 'linear-gradient(150deg, #059669, #047857 50%, #065f46)', title: 'Amalfi Coast\nGuide', sub: 'Italy · Summer 2026' },
-    ]
-  },
-  {
-    label: 'Products', icon: '🚀',
-    items: [
-      { bg: 'linear-gradient(170deg, #1e293b, #0f172a)', title: 'NEW\nCollection', sub: 'Spring 2026 · Shop Now' },
-      { bg: 'linear-gradient(155deg, #6366f1, #4f46e5 50%, #4338ca)', title: '50% OFF\nSummer Sale', sub: 'Limited time · Act now' },
-      { bg: 'linear-gradient(145deg, #ec4899, #db2777 50%, #be185d)', title: 'Just\nDropped', sub: 'New arrivals · Shop' },
-    ]
-  },
+/* ─── HOW IT WORKS ───────────────────────────────────────────────── */
+const STEPS = [
+  { n: '01', title: 'Upload your image', desc: 'Drop any image — JPG, PNG, or WebP. Works instantly in your browser, no upload to server.', color: 'var(--primary)' },
+  { n: '02', title: 'Add text & design', desc: 'Pick a template or start blank. Customize fonts, colors, and layout with pixel-perfect precision.', color: 'var(--pink)' },
+  { n: '03', title: 'Export in one click', desc: 'Download a crisp PNG in under 3 seconds. No watermark, no compression, no sign-up required.', color: 'var(--green)' },
 ]
 
-function ShowcaseCard({ item, delay }: { item: { bg: string; title: string; sub: string }; delay: number }) {
-  const ref = useRef<HTMLDivElement>(null!)
-  useReveal(ref, delay)
-  const lines = item.title.split('\n')
-
-  return (
-    <div ref={ref} className="reveal" style={{
-      aspectRatio: '3/4', borderRadius: 18, background: item.bg, position: 'relative', overflow: 'hidden',
-      cursor: 'pointer', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', transition: 'transform 0.35s cubic-bezier(.4,0,.2,1), box-shadow 0.35s'
-    }}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1.04)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 20px 48px rgba(0,0,0,0.45)' }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(0,0,0,0.3)' }}
-    >
-      <div style={{ position: 'absolute', width: 100, height: 100, borderRadius: '50%', top: -25, right: -25, background: 'rgba(255,255,255,0.06)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '55%', background: 'linear-gradient(to top, rgba(0,0,0,0.5), transparent)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '22px 20px' }}>
-        {lines.map((line, i) => (
-          <div key={i} style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: lines.length > 2 ? '1rem' : '1.2rem', color: '#fff', lineHeight: 1.2, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>{line}</div>
-        ))}
-        <div style={{ marginTop: 8, fontSize: '0.65rem', color: 'rgba(255,255,255,0.55)', fontWeight: 500, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{item.sub}</div>
-      </div>
-    </div>
-  )
-}
-
-function Showcase() {
-  const [activeIdx, setActiveIdx] = useState(0)
+function HowItWorks() {
   const ref = useRef<HTMLDivElement>(null!)
   useReveal(ref)
-
   return (
-    <section id="showcase" ref={ref} className="reveal" style={{ background: 'var(--clr-section)', padding: '100px 0 90px', position: 'relative' }}>
-      <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '75%', height: 1, background: 'linear-gradient(90deg, transparent, var(--clr-border), transparent)' }} />
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 40 }}>
-          <div>
-            <span style={{ fontSize: '0.7rem', color: 'var(--clr-pink)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Templates</span>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', fontWeight: 700, color: 'var(--clr-text)', marginTop: 8, letterSpacing: '-0.02em' }}>
-              Pick a category.<br /><span style={{ color: 'var(--clr-accent)', fontStyle: 'italic' }}>See what&apos;s possible.</span>
-            </h2>
-          </div>
-          <Link href="/tool" style={{ fontSize: '0.78rem', color: 'var(--clr-accent)', textDecoration: 'none', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-            Browse all templates <span>→</span>
-          </Link>
+    <section ref={ref} className="reveal section" style={{ background: 'var(--bg)' }}>
+      <div className="divider" />
+      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '64px 24px 0' }}>
+        <div style={{ textAlign: 'center', marginBottom: 56 }}>
+          <span style={{ fontSize: '.7rem', color: 'var(--accent)', fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase' }}>How it works</span>
+          <h2 style={{ fontFamily: 'var(--font-h)', fontSize: 'clamp(1.7rem, 3.8vw, 2.4rem)', fontWeight: 700, color: 'var(--text)', marginTop: 10, letterSpacing: '-.025em' }}>
+            Three steps to a stunning image
+          </h2>
         </div>
-
-        {/* Category pills */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 36, flexWrap: 'wrap' }}>
-          {CATEGORIES.map((cat, i) => (
-            <button key={cat.label} onClick={() => setActiveIdx(i)} style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 999, cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600,
-              background: i === activeIdx ? 'linear-gradient(135deg, var(--clr-primary), #4f46e5)' : 'rgba(30,32,42,0.6)',
-              color: i === activeIdx ? '#fff' : 'var(--clr-sub)',
-              boxShadow: i === activeIdx ? '0 4px 16px rgba(99,102,241,0.3)' : 'none',
-              border: i === activeIdx ? 'none' : '1px solid var(--clr-border)',
-              transition: 'all 0.25s ease'
-            }}>
-              <span>{cat.icon}</span> {cat.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Cards grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 20, maxWidth: 820 }}>
-          {CATEGORIES[activeIdx].items.map((item, i) => (
-            <ShowcaseCard key={`${activeIdx}-${i}`} item={item} delay={i * 80} />
-          ))}
+        <div style={{ display: 'grid', gap: 16, gridTemplateColumns: '1fr' }} className="md-3col">
+          {STEPS.map((s) => <StepCard key={s.n} step={s} />)}
         </div>
       </div>
     </section>
   )
 }
 
-/* ─────────────────────────────────────────────
-   FEATURES SECTION
-   ───────────────────────────────────────────── */
-const FEATURES = [
-  {
-    title: 'Fluid resizing',
-    desc: 'Drag, stretch, and squeeze overlays freely on all sides with pixel-perfect precision.',
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
-        <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
-      </svg>
-    ),
-    color: 'var(--clr-primary)'
-  },
-  {
-    title: 'Full font control',
-    desc: 'Choose from hundreds of fonts. Fine-tune size, weight, alignment, and letter spacing.',
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/>
-      </svg>
-    ),
-    color: 'var(--clr-pink)'
-  },
-  {
-    title: 'Zero tracking',
-    desc: 'No telemetry. No cookies. No sign-up. Everything runs locally in your browser.',
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-      </svg>
-    ),
-    color: 'var(--clr-green)'
-  },
-  {
-    title: 'Instant export',
-    desc: 'One click to download. PNG output ready for any platform — no compression, no quality loss.',
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-      </svg>
-    ),
-    color: '#f59e0b'
-  },
-]
+function StepCard({ step }: { step: typeof STEPS[0] }) {
+  const ref = useRef<HTMLDivElement>(null!)
+  useReveal(ref, 80)
+  return (
+    <div ref={ref} className="reveal glass feat-card bento-card" style={{ borderRadius: 20, padding: '32px 28px' }}>
+      <div style={{
+        width: 48, height: 48, borderRadius: 14,
+        background: `color-mix(in srgb, ${step.color} 15%, transparent)`,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontFamily: 'var(--font-h)', fontSize: '.8rem', fontWeight: 700,
+        color: step.color, marginBottom: 20, border: `1px solid color-mix(in srgb, ${step.color} 25%, transparent)`,
+      }}>{step.n}</div>
+      <h3 style={{ fontFamily: 'var(--font-h)', fontSize: '1.05rem', fontWeight: 700, color: 'var(--text)', marginBottom: 10 }}>{step.title}</h3>
+      <p style={{ fontSize: '.85rem', color: 'var(--muted)', lineHeight: 1.65 }}>{step.desc}</p>
+    </div>
+  )
+}
 
+/* ─── FEATURES BENTO ─────────────────────────────────────────────── */
 function Features() {
   const ref = useRef<HTMLDivElement>(null!)
   useReveal(ref)
-
   return (
-    <section ref={ref} className="reveal" style={{ background: 'var(--clr-bg)', padding: '100px 0 90px', position: 'relative' }}>
-      <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '75%', height: 1, background: 'linear-gradient(90deg, transparent, var(--clr-border), transparent)' }} />
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-        <div style={{ marginBottom: 48 }}>
-          <span style={{ fontSize: '0.7rem', color: 'var(--clr-accent)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Features</span>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', fontWeight: 700, color: 'var(--clr-text)', marginTop: 8, letterSpacing: '-0.02em' }}>
-            Everything you need.<br /><span style={{ color: 'var(--clr-accent)', fontStyle: 'italic' }}>Nothing you don&apos;t.</span>
+    <section ref={ref} className="reveal section" style={{ background: 'var(--bg2)' }}>
+      <div className="divider" />
+      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '64px 24px 0' }}>
+        <div style={{ textAlign: 'center', marginBottom: 56 }}>
+          <span style={{ fontSize: '.7rem', color: 'var(--pink)', fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase' }}>Features</span>
+          <h2 style={{ fontFamily: 'var(--font-h)', fontSize: 'clamp(1.7rem, 3.8vw, 2.4rem)', fontWeight: 700, color: 'var(--text)', marginTop: 10, letterSpacing: '-.025em' }}>
+            Everything you need.{' '}
+            <span style={{ color: 'var(--accent)', fontStyle: 'italic' }}>Nothing you don&apos;t.</span>
           </h2>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 18 }}>
-          {FEATURES.map((f, i) => (
-            <FeatureCard key={f.title} feature={f} delay={i * 100} />
+        <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' }}>
+          <BentoCard icon={<ResizeIcon />} color="var(--primary)" title="Pixel-perfect resizing" desc="Drag handles on all sides. Resize overlays freely without losing quality or snapping constraints." wide />
+          <BentoCard icon={<FontIcon />} color="var(--pink)" title="Full font control" desc="Hundreds of fonts. Fine-tune size, weight, alignment, letter spacing — every detail yours." />
+          <BentoCard icon={<ShieldIcon />} color="var(--green)" title="Zero tracking" desc="No telemetry. No cookies. No account. Everything runs locally in your browser. Period." />
+          <BentoCard icon={<DownloadIcon />} color="var(--amber)" title="Instant PNG export" desc="One click. Crisp PNG output. No watermarks, no compression, no waiting." />
+          <BentoCard icon={<LayersIcon />} color="var(--accent)" title="Layer management" desc="Stack text, shapes, and images. Reorder layers with a clean drag-and-drop panel." wide />
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function BentoCard({ icon, color, title, desc, wide }: { icon: React.ReactNode; color: string; title: string; desc: string; wide?: boolean }) {
+  const ref = useRef<HTMLDivElement>(null!)
+  useReveal(ref, 80)
+  return (
+    <div ref={ref} className="reveal glass feat-card bento-card" style={{
+      borderRadius: 20, padding: '32px 28px',
+      gridColumn: wide ? 'span 2' : undefined,
+    }}>
+      <div style={{
+        width: 50, height: 50, borderRadius: 14,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color, marginBottom: 20,
+        background: `rgba(${color === 'var(--primary)' ? '99,102,241' : color === 'var(--pink)' ? '236,72,153' : color === 'var(--green)' ? '34,197,94' : color === 'var(--amber)' ? '245,158,11' : '129,140,248'},.12)`,
+        border: `1px solid rgba(${color === 'var(--primary)' ? '99,102,241' : color === 'var(--pink)' ? '236,72,153' : color === 'var(--green)' ? '34,197,94' : color === 'var(--amber)' ? '245,158,11' : '129,140,248'},.2)`,
+      }}>{icon}</div>
+      <h3 style={{ fontFamily: 'var(--font-h)', fontSize: '1.05rem', fontWeight: 700, color: 'var(--text)', marginBottom: 10 }}>{title}</h3>
+      <p style={{ fontSize: '.85rem', color: 'var(--muted)', lineHeight: 1.65 }}>{desc}</p>
+    </div>
+  )
+}
+
+/* ─── TEMPLATE SHOWCASE ──────────────────────────────────────────── */
+const CATS = [
+  {
+    label: 'Recipes',
+    cards: [
+      { bg: 'linear-gradient(145deg,#f97316,#dc2626 50%,#991b1b)', title: 'Granola\nRecipe', sub: '5 ingredients · 20 min' },
+      { bg: 'linear-gradient(140deg,#ea580c,#c2410c 60%,#9a3412)', title: 'Overnight\nOats', sub: '3 min · Make ahead' },
+      { bg: 'linear-gradient(155deg,#ca8a04,#a16207 50%,#854d0e)', title: 'Lemon\nDressing', sub: 'Homemade · 2 min' },
+    ],
+  },
+  {
+    label: 'Quotes',
+    cards: [
+      { bg: 'linear-gradient(160deg,#0d9488,#0f766e 40%,#134e4a)', title: '"Start before\nyou feel ready."', sub: '— Daily Motivation' },
+      { bg: 'linear-gradient(150deg,#7c3aed,#6d28d9 50%,#4c1d95)', title: '"Do what you\ncan, with what\nyou have."', sub: '— T. Roosevelt' },
+      { bg: 'linear-gradient(165deg,#1e40af,#1e3a8a 50%,#1e293b)', title: '"The only way\nis through."', sub: '— Robert Frost' },
+    ],
+  },
+  {
+    label: 'Travel',
+    cards: [
+      { bg: 'linear-gradient(135deg,#7c3aed,#a78bfa 50%,#c4b5fd)', title: 'Top 5 Hidden\nGems in Bali', sub: 'Travel · Indonesia' },
+      { bg: 'linear-gradient(140deg,#0891b2,#0e7490 50%,#155e75)', title: 'Tokyo in\n48 Hours', sub: 'Japan · Budget trip' },
+      { bg: 'linear-gradient(150deg,#059669,#047857 50%,#065f46)', title: 'Amalfi Coast\nGuide', sub: 'Italy · Summer 2026' },
+    ],
+  },
+  {
+    label: 'Products',
+    cards: [
+      { bg: 'linear-gradient(170deg,#1e293b,#0f172a)', title: 'NEW\nCollection', sub: 'Spring 2026 · Shop Now' },
+      { bg: 'linear-gradient(155deg,#6366f1,#4f46e5 50%,#4338ca)', title: '50% OFF\nSummer Sale', sub: 'Limited time · Act now' },
+      { bg: 'linear-gradient(145deg,#ec4899,#db2777 50%,#be185d)', title: 'Just\nDropped', sub: 'New arrivals · Shop' },
+    ],
+  },
+]
+
+function Showcase() {
+  const [active, setActive] = useState(0)
+  const ref = useRef<HTMLDivElement>(null!)
+  useReveal(ref)
+  return (
+    <section ref={ref} className="reveal section" style={{ background: 'var(--bg)' }}>
+      <div className="divider" />
+      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '64px 24px 0' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 36 }}>
+          <div>
+            <span style={{ fontSize: '.7rem', color: 'var(--green)', fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase' }}>Templates</span>
+            <h2 style={{ fontFamily: 'var(--font-h)', fontSize: 'clamp(1.7rem, 3.8vw, 2.4rem)', fontWeight: 700, color: 'var(--text)', marginTop: 10, letterSpacing: '-.025em' }}>
+              Pick a category.<br /><span style={{ color: 'var(--accent)' }}>See what&apos;s possible.</span>
+            </h2>
+          </div>
+          <Link href="/templates" style={{ fontSize: '.8rem', color: 'var(--accent)', fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            Browse all templates <ArrowRight size={14} />
+          </Link>
+        </div>
+
+        <div style={{ display: 'flex', gap: 8, marginBottom: 36, flexWrap: 'wrap' }}>
+          {CATS.map((c, i) => (
+            <button key={c.label} onClick={() => setActive(i)} style={{
+              padding: '8px 18px', borderRadius: 999, cursor: 'pointer', fontSize: '.8rem', fontWeight: 600,
+              fontFamily: 'var(--font-h)', border: 'none',
+              background: i === active ? 'linear-gradient(135deg, var(--primary), var(--primary2))' : 'rgba(255,255,255,.05)',
+              color: i === active ? '#fff' : 'var(--muted)',
+              boxShadow: i === active ? '0 4px 16px rgba(99,102,241,.3)' : 'none',
+              outline: i !== active ? '1px solid var(--border)' : 'none',
+              transition: 'all .2s',
+            }}>{c.label}</button>
+          ))}
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: 16, maxWidth: 800 }}>
+          {CATS[active].cards.map((card, i) => (
+            <TemplateCard key={`${active}-${i}`} card={card} delay={i * 70} />
           ))}
         </div>
       </div>
@@ -490,75 +532,91 @@ function Features() {
   )
 }
 
-function FeatureCard({ feature, delay }: { feature: typeof FEATURES[0]; delay: number }) {
+function TemplateCard({ card, delay }: { card: { bg: string; title: string; sub: string }; delay: number }) {
   const ref = useRef<HTMLDivElement>(null!)
   useReveal(ref, delay)
-
+  const lines = card.title.split('\n')
   return (
-    <div ref={ref} className="reveal feature-card" style={{
-      background: 'var(--clr-card)', border: '1px solid var(--clr-border)', borderRadius: 18,
-      padding: '28px 24px', backdropFilter: 'blur(14px)'
-    }}>
-      <div className="feature-icon" style={{
-        width: 48, height: 48, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: `${feature.color}15`, color: feature.color, marginBottom: 18, transition: 'box-shadow 0.3s'
-      }}>
-        {feature.icon}
+    <div ref={ref} className="reveal" style={{
+      aspectRatio: '3/4', borderRadius: 18, background: card.bg,
+      position: 'relative', overflow: 'hidden', cursor: 'pointer',
+      boxShadow: '0 8px 32px rgba(0,0,0,.35)',
+      transition: 'transform .35s cubic-bezier(.4,0,.2,1), box-shadow .35s',
+    }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1.04)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 24px 56px rgba(0,0,0,.5)' }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(0,0,0,.35)' }}
+    >
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '55%', background: 'linear-gradient(to top, rgba(0,0,0,.55), transparent)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '20px 18px' }}>
+        {lines.map((l, i) => (
+          <div key={i} style={{ fontFamily: 'var(--font-h)', fontWeight: 700, fontSize: lines.length > 2 ? '.9rem' : '1.05rem', color: '#fff', lineHeight: 1.2, textShadow: '0 2px 8px rgba(0,0,0,.4)' }}>{l}</div>
+        ))}
+        <div style={{ marginTop: 7, fontSize: '.62rem', color: 'rgba(255,255,255,.5)', fontWeight: 600, letterSpacing: '.04em', textTransform: 'uppercase' }}>{card.sub}</div>
       </div>
-      <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 700, color: 'var(--clr-text)', marginBottom: 8 }}>{feature.title}</h3>
-      <p style={{ fontSize: '0.8rem', color: 'var(--clr-muted)', lineHeight: 1.6 }}>{feature.desc}</p>
     </div>
   )
 }
 
-/* ─────────────────────────────────────────────
-   FINAL CTA SECTION
-   ───────────────────────────────────────────── */
+/* ─── FINAL CTA ──────────────────────────────────────────────────── */
 function FinalCTA() {
   const ref = useRef<HTMLDivElement>(null!)
   useReveal(ref)
-
   return (
-    <section ref={ref} className="reveal" style={{ background: 'var(--clr-section)', padding: '90px 0 100px', position: 'relative', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '75%', height: 1, background: 'linear-gradient(90deg, transparent, var(--clr-border), transparent)' }} />
-      {/* Glow blob */}
-      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '70%', height: '80%', background: 'radial-gradient(ellipse, rgba(99,102,241,0.08) 0%, transparent 70%)', pointerEvents: 'none', filter: 'blur(30px)' }} />
-
-      <div style={{ maxWidth: 700, margin: '0 auto', padding: '0 24px', textAlign: 'center', position: 'relative' }}>
-        <span style={{ fontSize: '0.7rem', color: 'var(--clr-green)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Ready?</span>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', fontWeight: 700, color: 'var(--clr-text)', marginTop: 12, lineHeight: 1.2, letterSpacing: '-0.02em' }}>
-          Create your first overlay<br /><span style={{ color: 'var(--clr-accent)', fontStyle: 'italic' }}>in under a minute.</span>
+    <section ref={ref} className="reveal section" style={{ background: 'var(--bg2)' }}>
+      <div className="divider" />
+      <div style={{ maxWidth: 680, margin: '0 auto', padding: '64px 24px 0', textAlign: 'center', position: 'relative' }}>
+        <div style={{ position: 'absolute', top: '30%', left: '50%', transform: 'translateX(-50%)', width: '80%', height: '60%', background: 'radial-gradient(ellipse, rgba(99,102,241,.12) 0%, transparent 70%)', filter: 'blur(32px)', pointerEvents: 'none' }} />
+        <span style={{ fontSize: '.7rem', color: 'var(--green)', fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase' }}>Ready?</span>
+        <h2 style={{ fontFamily: 'var(--font-h)', fontSize: 'clamp(1.9rem, 4.5vw, 3rem)', fontWeight: 700, color: 'var(--text)', marginTop: 14, lineHeight: 1.15, letterSpacing: '-.03em' }}>
+          Create your first overlay<br /><span style={{ color: 'var(--accent)' }}>in under a minute.</span>
         </h2>
-        <p style={{ marginTop: 16, fontSize: '0.9rem', color: 'var(--clr-muted)', maxWidth: 440, margin: '16px auto 0' }}>
-          No account. No credit card. No bloated editor. Just open and start.
+        <p style={{ marginTop: 18, fontSize: '.95rem', color: 'var(--muted)', lineHeight: 1.7 }}>
+          No account. No credit card. No bloated editor.<br />Just open and start building.
         </p>
-        <Link href="/tool" className="cta-btn" style={{
-          display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 36,
-          background: 'linear-gradient(135deg, var(--clr-primary), #4f46e5)',
-          color: '#fff', fontSize: '0.95rem', fontWeight: 600, padding: '14px 34px', borderRadius: 999,
-          textDecoration: 'none', boxShadow: '0 4px 28px rgba(99,102,241,0.4)'
-        }}>
-          Open the editor for free
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 8h10M9 4l4 4-4 4" /></svg>
-        </Link>
-        <p style={{ marginTop: 18, fontSize: '0.7rem', color: 'var(--clr-muted)' }}>Works in any browser · Exports in 3 seconds</p>
+        <div style={{ marginTop: 40, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Link href="/tool" className="btn-primary" style={{ padding: '15px 36px', fontSize: '1rem' }}>
+            Open the editor — it&apos;s free
+            <ArrowRight size={16} />
+          </Link>
+        </div>
+        <p style={{ marginTop: 20, fontSize: '.7rem', color: 'var(--sub)' }}>Works in any browser · Exports in 3 seconds · No watermarks</p>
       </div>
     </section>
   )
 }
 
-/* ─────────────────────────────────────────────
-   PAGE ROOT
-   ───────────────────────────────────────────── */
+/* ─── ICONS ──────────────────────────────────────────────────────── */
+function ResizeIcon() {
+  return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+}
+function FontIcon() {
+  return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+}
+function ShieldIcon() {
+  return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+}
+function DownloadIcon() {
+  return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+}
+function LayersIcon() {
+  return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+}
+function ArrowRight({ size = 16 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+}
+
+/* ─── PAGE ROOT ──────────────────────────────────────────────────── */
 export default function HomePage() {
   return (
-    <div style={{ background: 'var(--clr-bg)', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--bg)', minHeight: '100vh' }}>
       <GlobalStyles />
-      <StickyNav />
+      <ScrollProgress />
+      <Navbar />
       <Hero />
       <Ticker />
-      <Showcase />
+      <HowItWorks />
       <Features />
+      <Showcase />
       <FinalCTA />
     </div>
   )
