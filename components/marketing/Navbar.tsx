@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link";
 
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (

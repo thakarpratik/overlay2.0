@@ -1,3 +1,5 @@
+"use client"
+
 import PageShell from "@/components/marketing/PageShell"
 
 const CARD_STYLE = {
