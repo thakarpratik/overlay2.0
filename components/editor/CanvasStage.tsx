@@ -27,7 +27,7 @@ export default function CanvasStage() {
 
   const currentImage = images[currentIndex];
 
-  const displayWidth = 560; // slightly larger = more "pro"
+  const displayWidth = 520;
   const scale = displayWidth / canvas.width;
   const displayHeight = Math.round(canvas.height * scale);
 
@@ -39,7 +39,6 @@ export default function CanvasStage() {
 
     const startX = e.clientX;
     const startY = e.clientY;
-
     const layer = layers.find((x) => x.id === layerId);
     if (!layer) return;
 
@@ -51,15 +50,13 @@ export default function CanvasStage() {
       const dy = (ev.clientY - startY) / scale;
       updateLayer(layerId, {
         x: clamp(ox + dx, 0, canvas.width - 10),
-        y: clamp(oy + dy, 0, canvas.height - 10)
+        y: clamp(oy + dy, 0, canvas.height - 10),
       });
     };
-
     const onUp = () => {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
     };
-
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
   };
@@ -71,40 +68,25 @@ export default function CanvasStage() {
     const id = selected.id;
     const startX = e.clientX;
     const startY = e.clientY;
-
-    const ox = selected.x;
-    const oy = selected.y;
-    const ow = selected.w;
-    const oh = selected.h;
-
+    const ox = selected.x, oy = selected.y, ow = selected.w, oh = selected.h;
     const MIN = 24;
 
     const onMove = (ev: PointerEvent) => {
       const dx = (ev.clientX - startX) / scale;
       const dy = (ev.clientY - startY) / scale;
-
       let x = ox, y = oy, w = ow, h = oh;
 
       if (handle.includes("e")) w = clamp(ow + dx, MIN, canvas.width - ox);
-      if (handle.includes("w")) {
-        x = clamp(ox + dx, 0, ox + ow - MIN);
-        w = clamp(ow - dx, MIN, ox + ow);
-      }
-
+      if (handle.includes("w")) { x = clamp(ox + dx, 0, ox + ow - MIN); w = clamp(ow - dx, MIN, ox + ow); }
       if (handle.includes("s")) h = clamp(oh + dy, MIN, canvas.height - oy);
-      if (handle.includes("n")) {
-        y = clamp(oy + dy, 0, oy + oh - MIN);
-        h = clamp(oh - dy, MIN, oy + oh);
-      }
+      if (handle.includes("n")) { y = clamp(oy + dy, 0, oy + oh - MIN); h = clamp(oh - dy, MIN, oy + oh); }
 
       updateLayer(id, { x, y, w, h });
     };
-
     const onUp = () => {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
     };
-
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
   };
@@ -124,10 +106,10 @@ export default function CanvasStage() {
         width: hs,
         height: hs,
         borderRadius: 999,
-        background: "white",
-        border: "1px solid rgba(0,0,0,.35)",
-        boxShadow: "0 4px 10px rgba(0,0,0,.10)"
-      } as React.CSSProperties
+        background: "#a882ff",
+        border: "2px solid white",
+        boxShadow: "0 2px 8px rgba(0,0,0,.4)",
+      } as React.CSSProperties,
     });
 
     return [
@@ -138,35 +120,103 @@ export default function CanvasStage() {
       mk(x, y, "nwse-resize", "nw"),
       mk(x + w, y, "nesw-resize", "ne"),
       mk(x, y + h, "nesw-resize", "sw"),
-      mk(x + w, y + h, "nwse-resize", "se")
+      mk(x + w, y + h, "nwse-resize", "se"),
     ];
   }, [selected]);
 
+  const canPrev = currentIndex > 0;
+  const canNext = currentIndex < images.length - 1;
+
   return (
-    <div className="p-4">
-      <div className="flex items-center justify-between gap-3">
-        <div className="text-sm font-medium">Canvas</div>
-        <div className="flex items-center gap-2">
-          <button className="rounded-lg border px-3 py-1.5 text-sm disabled:opacity-40" disabled={currentIndex <= 0} onClick={() => setCurrentIndex(currentIndex - 1)}>Prev</button>
-          <div className="text-xs text-neutral-600">{currentIndex + 1}/{images.length || 1}</div>
-          <button className="rounded-lg border px-3 py-1.5 text-sm disabled:opacity-40" disabled={currentIndex >= images.length - 1} onClick={() => setCurrentIndex(currentIndex + 1)}>Next</button>
+    <div className="p-4 flex flex-col h-full">
+      {/* Header row */}
+      <div className="flex items-center justify-between mb-4">
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" /><path d="m3 9 4-4 4 4 4-4 4 4" /><path d="M3 15h18" />
+          </svg>
+          <span style={{ color: "rgba(255,255,255,0.55)", fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" }}>Canvas</span>
+        </div>
+
+        {/* Prev / Next */}
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <button
+            disabled={!canPrev}
+            onClick={() => setCurrentIndex(currentIndex - 1)}
+            style={{
+              width: 28, height: 28, borderRadius: 8, border: "1px solid rgba(255,255,255,0.12)",
+              background: canPrev ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.02)",
+              color: canPrev ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.2)",
+              display: "flex", alignItems: "center", justifyContent: "center", cursor: canPrev ? "pointer" : "default",
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+
+          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", minWidth: 44, textAlign: "center" }}>
+            {currentIndex + 1} / {images.length || 1}
+          </span>
+
+          <button
+            disabled={!canNext}
+            onClick={() => setCurrentIndex(currentIndex + 1)}
+            style={{
+              width: 28, height: 28, borderRadius: 8, border: "1px solid rgba(255,255,255,0.12)",
+              background: canNext ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.02)",
+              color: canNext ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.2)",
+              display: "flex", alignItems: "center", justifyContent: "center", cursor: canNext ? "pointer" : "default",
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
         </div>
       </div>
 
-      <div className="mt-4 flex justify-center">
-        <div className="relative rounded-2xl overflow-hidden bg-neutral-100" style={{ width: displayWidth, height: displayHeight }} onPointerDown={() => selectLayer(null)}>
+      {/* Canvas viewport */}
+      <div className="flex justify-center mb-4">
+        <div
+          style={{
+            borderRadius: 16,
+            overflow: "hidden",
+            boxShadow: "0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.07)",
+            position: "relative",
+            width: displayWidth,
+            height: displayHeight,
+            background: "#111",
+          }}
+          onPointerDown={() => selectLayer(null)}
+        >
           <div
             data-export-stage
             data-cw={canvas.width}
             data-ch={canvas.height}
             ref={stageRef}
-            className="absolute left-0 top-0 origin-top-left"
-            style={{ width: canvas.width, height: canvas.height, transform: `scale(${scale})` }}
+            style={{
+              position: "absolute",
+              left: 0,
+              top: 0,
+              width: canvas.width,
+              height: canvas.height,
+              transformOrigin: "top left",
+              transform: `scale(${scale})`,
+            }}
           >
             {currentImage?.src ? (
-              <img src={currentImage.src} alt="" crossOrigin="anonymous" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
+              <img
+                src={currentImage.src}
+                alt=""
+                crossOrigin="anonymous"
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                draggable={false}
+              />
             ) : (
-              <div className="absolute inset-0 grid place-items-center text-sm text-neutral-500">No image loaded</div>
+              <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", color: "rgba(255,255,255,0.25)", fontSize: 13 }}>
+                No image loaded
+              </div>
             )}
 
             {layers.map((l) => {
@@ -179,9 +229,9 @@ export default function CanvasStage() {
                 height: l.h,
                 opacity: l.opacity ?? 1,
                 transform: `rotate(${l.rotation ?? 0}deg)`,
-                outline: isSelected ? "2px solid rgba(0,0,0,.55)" : "none",
+                outline: isSelected ? "2px solid rgba(168,130,255,0.9)" : "none",
                 outlineOffset: 2,
-                cursor: "grab"
+                cursor: "grab",
               };
 
               if (l.type === "shape") {
@@ -217,7 +267,7 @@ export default function CanvasStage() {
                     textAlign: t.align,
                     whiteSpace: "pre-wrap",
                     userSelect: "none",
-                    textShadow: t.textShadow
+                    textShadow: t.textShadow,
                   }}
                   onPointerDown={(e) => onPointerDownLayer(e, t.id)}
                 >
@@ -227,9 +277,13 @@ export default function CanvasStage() {
             })}
 
             {selected && (
-              <div className="absolute inset-0 pointer-events-none">
+              <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
                 {handles.map((h) => (
-                  <div key={h.key} className="pointer-events-auto" style={{ ...h.style, cursor: h.cursor }} onPointerDown={(e) => onPointerDownResize(e, h.key)} />
+                  <div
+                    key={h.key}
+                    style={{ ...h.style, cursor: h.cursor, pointerEvents: "auto" }}
+                    onPointerDown={(e) => onPointerDownResize(e, h.key)}
+                  />
                 ))}
               </div>
             )}
@@ -237,7 +291,60 @@ export default function CanvasStage() {
         </div>
       </div>
 
-      <div className="mt-3 text-xs text-neutral-500 text-center">Canvas: {canvas.width}×{canvas.height} (2:3)</div>
+      {/* Thumbnail filmstrip */}
+      {images.length > 1 && (
+        <div
+          style={{
+            display: "flex",
+            gap: 6,
+            overflowX: "auto",
+            padding: "4px 2px",
+            scrollbarWidth: "none",
+          }}
+        >
+          {images.map((img, idx) => {
+            const active = idx === currentIndex;
+            return (
+              <button
+                key={idx}
+                onClick={() => setCurrentIndex(idx)}
+                style={{
+                  flexShrink: 0,
+                  width: 48,
+                  height: 64,
+                  borderRadius: 8,
+                  overflow: "hidden",
+                  border: active ? "2px solid rgba(168,130,255,0.9)" : "2px solid rgba(255,255,255,0.1)",
+                  background: "#1a1a2e",
+                  cursor: "pointer",
+                  padding: 0,
+                  position: "relative",
+                  transition: "border-color 0.15s",
+                }}
+              >
+                {img.src ? (
+                  <img
+                    src={img.src}
+                    alt={`Image ${idx + 1}`}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                    draggable={false}
+                  />
+                ) : (
+                  <div style={{ width: "100%", height: "100%", background: "rgba(255,255,255,0.05)" }} />
+                )}
+                {active && (
+                  <div style={{ position: "absolute", inset: 0, background: "rgba(168,130,255,0.15)" }} />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Canvas size hint */}
+      <div style={{ marginTop: 8, textAlign: "center", fontSize: 10, color: "rgba(255,255,255,0.2)", letterSpacing: "0.04em" }}>
+        {canvas.width} × {canvas.height}
+      </div>
     </div>
   );
 }
