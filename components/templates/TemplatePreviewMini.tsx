@@ -61,9 +61,9 @@ export default function TemplatePreviewMini({
       : "linear-gradient(to bottom, rgba(255,255,255,.05), rgba(255,255,255,.35))";
 
   return (
-    <div className="relative overflow-hidden rounded-xl border bg-white" style={{ width: W, height: H }}>
-      <div className="absolute inset-0" style={{ background: backdropFor(template.id, bgStyle) }} />
-      <div className="absolute inset-0" style={{ background: overlay }} />
+    <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 12, background: '#0d0d12', width: W, height: H }}>
+      <div style={{ position: 'absolute', inset: 0, background: backdropFor(template.id, bgStyle) }} />
+      <div style={{ position: 'absolute', inset: 0, background: overlay }} />
 
       {template.layers.map((l) => {
         const style: React.CSSProperties = {

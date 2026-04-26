@@ -28,7 +28,7 @@ export default function Navbar() {
           <img src="/layerNow_Logo.svg" alt="OverlayNow" style={{ height: 36, width: 'auto' }} />
         </Link>
 
-        <nav className="hidden md:flex" style={{ display: 'none', alignItems: 'center', gap: 4 }}>
+        <nav className="hidden md:flex" style={{ alignItems: 'center', gap: 4 }}>
           <NavLink href="/templates">Templates</NavLink>
           <NavLink href="/features">Features</NavLink>
           <NavLink href="/pricing">Pricing</NavLink>
@@ -36,7 +36,7 @@ export default function Navbar() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Link href="/tool/new" style={{
-            display: 'none', padding: '7px 16px', borderRadius: 10,
+            padding: '7px 16px', borderRadius: 10,
             border: '1px solid rgba(255,255,255,.08)', background: 'rgba(255,255,255,.03)',
             color: '#f8fafc', fontSize: '.8rem', fontWeight: 500, textDecoration: 'none',
             fontFamily: "'DM Sans', system-ui, sans-serif",
