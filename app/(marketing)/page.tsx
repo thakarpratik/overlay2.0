@@ -172,10 +172,12 @@ function Navbar() {
       position: 'fixed', top: 16, left: '50%', transform: 'translateX(-50%)',
       width: 'calc(100% - 48px)', maxWidth: 1100, zIndex: 100,
       padding: '10px 20px', borderRadius: 999,
-      background: scrolled ? 'rgba(5,5,7,0.78)' : 'rgba(5,5,7,0)',
-      border: scrolled ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent',
-      backdropFilter: scrolled ? 'blur(20px)' : 'none',
-      transition: 'background .4s, border-color .4s, backdrop-filter .4s',
+      background: scrolled ? 'rgba(20,20,30,0.88)' : 'rgba(30,30,45,0.72)',
+      border: '1px solid rgba(255,255,255,0.14)',
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+      boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.4)' : '0 2px 16px rgba(0,0,0,0.25)',
+      transition: 'background .4s, box-shadow .4s',
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
     }}>
       <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
@@ -189,11 +191,11 @@ function Navbar() {
         {[['Templates', '/templates'], ['Features', '/features'], ['Pricing', '/pricing']].map(([label, href]) => (
           <Link key={href} href={href} style={{
             padding: '7px 16px', borderRadius: 999, fontSize: '.82rem', fontWeight: 500,
-            color: 'var(--muted)', textDecoration: 'none', fontFamily: 'var(--font-b)',
+            color: '#c8d0e0', textDecoration: 'none', fontFamily: 'var(--font-b)',
             transition: 'color .2s, background .2s',
           }}
-            onMouseEnter={e => { (e.target as HTMLElement).style.color = 'var(--text)'; (e.target as HTMLElement).style.background = 'rgba(255,255,255,.06)' }}
-            onMouseLeave={e => { (e.target as HTMLElement).style.color = 'var(--muted)'; (e.target as HTMLElement).style.background = 'transparent' }}
+            onMouseEnter={e => { (e.target as HTMLElement).style.color = '#ffffff'; (e.target as HTMLElement).style.background = 'rgba(255,255,255,.10)' }}
+            onMouseLeave={e => { (e.target as HTMLElement).style.color = '#c8d0e0'; (e.target as HTMLElement).style.background = 'transparent' }}
           >{label}</Link>
         ))}
       </div>
