@@ -2,79 +2,76 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 const LINKS = [
   { href: "/templates", label: "Templates" },
-  { href: "/features", label: "Features" },
-  { href: "/pricing", label: "Pricing" },
+  { href: "/features", label: "Method" },
+  { href: "/pricing", label: "Cost" },
+  { href: "/about", label: "About" },
 ];
 
-const NavLink = ({ href, children, active }: { href: string; children: React.ReactNode; active?: boolean }) => (
-  <Link
-    href={href}
-    className="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
-    style={{
-      color: active ? '#f8fafc' : '#94a3b8',
-      background: active ? 'rgba(255,255,255,.06)' : 'transparent',
-      textDecoration: 'none',
-      fontFamily: "'DM Sans', system-ui, sans-serif"
-    }}
-    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#f8fafc'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,.06)' }}
-    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = active ? '#f8fafc' : '#94a3b8'; (e.currentTarget as HTMLElement).style.background = active ? 'rgba(255,255,255,.06)' : 'transparent' }}
-  >
-    {children}
-  </Link>
-);
+function Wordmark() {
+  return (
+    <Link href="/" className="wordmark" aria-label="OverlayNow home">
+      Overlay<span>Now</span>
+    </Link>
+  );
+}
 
 export default function Navbar() {
   const pathname = usePathname();
-  const inTool = pathname.startsWith("/tool");
+  const [open, setOpen] = useState(false);
 
   return (
-    <header style={{
-      position: 'sticky', top: 0, zIndex: 40,
-      borderBottom: '1px solid rgba(255,255,255,0.07)',
-      background: 'rgba(5,5,7,0.82)',
-      backdropFilter: 'blur(20px)',
-      WebkitBackdropFilter: 'blur(20px)',
-    }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-          <img src="/layerNow_Logo.svg" alt="OverlayNow" style={{ height: 36, width: 'auto' }} />
-        </Link>
+    <header className="site-header">
+      <div className="site-header-inner">
+        <Wordmark />
 
-        <nav className="hidden md:flex" style={{ alignItems: 'center', gap: 4 }}>
+        <nav className="site-nav" aria-label="Primary">
           {LINKS.map((link) => (
-            <NavLink key={link.href} href={link.href} active={pathname === link.href}>
+            <Link
+              key={link.href}
+              href={link.href}
+              aria-current={pathname === link.href ? "page" : undefined}
+            >
               {link.label}
-            </NavLink>
+            </Link>
           ))}
         </nav>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Link href="/tool/new" style={{
-            padding: '7px 16px', borderRadius: 10,
-            border: '1px solid rgba(255,255,255,.08)', background: pathname === '/tool/new' ? 'rgba(255,255,255,.08)' : 'rgba(255,255,255,.03)',
-            color: '#f8fafc', fontSize: '.8rem', fontWeight: 500, textDecoration: 'none',
-            fontFamily: "'DM Sans', system-ui, sans-serif",
-            transition: 'background .2s',
-          }} className="hidden sm:inline-flex">
-            New project
-          </Link>
-          <Link href="/tool" style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
-            color: '#fff', fontSize: '.8rem', fontWeight: 600,
-            padding: '8px 18px', borderRadius: 999, textDecoration: 'none',
-            fontFamily: "'Space Grotesk', system-ui, sans-serif",
-            boxShadow: '0 4px 16px rgba(99,102,241,.3)',
-            transition: 'box-shadow .2s, transform .2s',
-            opacity: inTool ? 0.95 : 1,
-          }}>
-            Open Tool
-          </Link>
+        <div className="header-actions">
+          <Link href="/tool/new" className="btn-ghost hidden sm:inline-flex">New plate</Link>
+          <Link href="/tool" className="btn-ink">Open the bench</Link>
+          <button
+            type="button"
+            className="nav-toggle"
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+            onClick={() => setOpen((v) => !v)}
+          >
+            <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+              {open ? (
+                <path d="M4 4l10 10M14 4L4 14" />
+              ) : (
+                <path d="M3 5h12M3 9h12M3 13h12" />
+              )}
+            </svg>
+          </button>
         </div>
       </div>
+
+      {open && (
+        <nav id="mobile-nav" className="mobile-nav" aria-label="Mobile">
+          {LINKS.map((link) => (
+            <Link key={link.href} href={link.href} onClick={() => setOpen(false)} aria-current={pathname === link.href ? "page" : undefined}>
+              {link.label}
+            </Link>
+          ))}
+          <Link href="/tool/new" onClick={() => setOpen(false)}>New plate</Link>
+        </nav>
+      )}
     </header>
   );
 }

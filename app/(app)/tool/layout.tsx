@@ -17,17 +17,19 @@ export default function ToolLayout({ children }: { children: React.ReactNode }) 
   }, [pathname]);
 
   return (
-    <div className="min-h-screen" style={{ background: '#050507' }}>
+    <div className="site-wrap" style={{ background: "#1c1916" }}>
       <Navbar />
-      {allowed === null ? (
-        <div className="min-h-[50vh] flex items-center justify-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500" />
-        </div>
-      ) : allowed ? (
-        children
-      ) : (
-        <EmailGate />
-      )}
+      <main id="main" className="site-main">
+        {allowed === null ? (
+          <div className="min-h-[50vh] flex items-center justify-center" style={{ color: "#e8e0d4" }}>
+            Loading the bench…
+          </div>
+        ) : allowed ? (
+          children
+        ) : (
+          <EmailGate />
+        )}
+      </main>
     </div>
   );
 }
