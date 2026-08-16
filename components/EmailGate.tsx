@@ -52,12 +52,11 @@ export default function EmailGate({ heading = "Log in to the bench" }: { heading
   return (
     <div style={{ minHeight: "70vh", display: "grid", placeItems: "center", padding: 24, background: "var(--paper)" }}>
       <form onSubmit={handleSubmit} className="sheet" style={{ width: "100%", maxWidth: 440, display: "grid", gap: 14 }}>
-        <p className="home-kicker">Loops list · no password</p>
         <h1 style={{ fontFamily: "var(--font-display)", fontSize: "2.4rem", letterSpacing: "-0.04em", lineHeight: 0.95 }}>
           {heading}
         </h1>
         <p className="prose">
-          Leave your email to open the bench. We send it to Loops so we can reach you. Your pictures stay in this browser.
+          Leave your email to open the bench. Your pictures stay in this browser.
         </p>
         <label>
           <span className="home-kicker">Email</span>
