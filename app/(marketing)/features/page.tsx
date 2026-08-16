@@ -14,7 +14,7 @@ export default function Page() {
     <PageShell
       title="The method"
       subtitle="A short bench. Upload, stamp, export. Nothing extra between you and the plate."
-      cta={{ label: "Open the bench", href: "/tool" }}
+      cta={{ label: "Open the bench", href: "/start" }}
     >
       <div>
         {items.map((item, i) => (

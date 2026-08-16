@@ -41,8 +41,8 @@ export default function Navbar() {
         </nav>
 
         <div className="header-actions">
-          <Link href="/tool/new" className="btn-ghost hidden sm:inline-flex">New plate</Link>
-          <Link href="/tool" className="btn-ink">Open the bench</Link>
+          <Link href="/start" className="btn-ghost hidden sm:inline-flex">Log in</Link>
+          <Link href="/start" className="btn-ink">Open the bench</Link>
           <button
             type="button"
             className="nav-toggle"
@@ -69,7 +69,7 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Link href="/tool/new" onClick={() => setOpen(false)}>New plate</Link>
+          <Link href="/start" onClick={() => setOpen(false)}>Log in</Link>
         </nav>
       )}
     </header>

@@ -6,7 +6,7 @@ export default function Page() {
     <PageShell
       title="What it costs"
       subtitle="The bench is free. Paid tiers are listed for when we turn them on. Today everything listed under Free already ships."
-      cta={{ label: "Open the bench", href: "/tool" }}
+      cta={{ label: "Open the bench", href: "/start" }}
     >
       <table className="price-table">
         <thead>
@@ -50,7 +50,7 @@ export default function Page() {
           </tr>
           <tr>
             <td></td>
-            <td><Link href="/tool" className="btn-ink">Start</Link></td>
+            <td><Link href="/start" className="btn-ink">Start</Link></td>
             <td><Link href="/tool" className="btn-ghost">Soon</Link></td>
             <td><Link href="/contact" className="btn-ghost">Write us</Link></td>
           </tr>

@@ -8,6 +8,7 @@ const LINKS = [
   { label: "Privacy", href: "/privacy" },
   { label: "Terms", href: "/terms" },
   { label: "Contact", href: "/contact" },
+  { label: "Log in", href: "/start" },
 ];
 
 export default function Footer() {

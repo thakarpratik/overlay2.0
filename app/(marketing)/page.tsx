@@ -11,7 +11,7 @@ export default function HomePage() {
             Drop a photo. Stamp a line. Export a 2:3 plate. The file never leaves this browser.
           </p>
           <div className="home-actions">
-            <Link href="/tool" className="btn-ink btn-lg">Open the bench</Link>
+            <Link href="/start" className="btn-ink btn-lg">Open the bench</Link>
             <Link href="/templates" className="btn-ghost btn-lg">See the plates</Link>
           </div>
         </div>
@@ -52,7 +52,7 @@ export default function HomePage() {
         <div className="band-inner">
           <h2>Forty plates. Zero account tax on the work.</h2>
           <p>The bench is free. Email is how we say hello, not how we hold your pictures hostage.</p>
-          <Link href="/tool/new" className="btn-ink">Start a plate</Link>
+          <Link href="/start" className="btn-ink">Start a plate</Link>
         </div>
       </section>
     </>
