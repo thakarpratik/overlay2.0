@@ -158,61 +158,6 @@ function ScrollProgress() {
   return <div id="progress-bar" style={{ width: `${w}%` }} />
 }
 
-/* ─── NAVBAR ─────────────────────────────────────────────────────── */
-function Navbar() {
-  const [scrolled, setScrolled] = useState(false)
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 60)
-    window.addEventListener('scroll', fn, { passive: true })
-    return () => window.removeEventListener('scroll', fn)
-  }, [])
-
-  return (
-    <nav style={{
-      position: 'fixed', top: 16, left: '50%', transform: 'translateX(-50%)',
-      width: 'calc(100% - 48px)', maxWidth: 1100, zIndex: 100,
-      padding: '10px 20px', borderRadius: 999,
-      background: scrolled ? 'rgba(20,20,30,0.88)' : 'rgba(30,30,45,0.72)',
-      border: '1px solid rgba(255,255,255,0.14)',
-      backdropFilter: 'blur(20px)',
-      WebkitBackdropFilter: 'blur(20px)',
-      boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.4)' : '0 2px 16px rgba(0,0,0,0.25)',
-      transition: 'background .4s, box-shadow .4s',
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-    }}>
-      <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-        <img src="/layerNow_Logo.svg" alt="OverlayNow" style={{ height: 36, width: 'auto' }} />
-      </Link>
-
-      <div className="md-flex" style={{
-        display: 'none', gap: 4,
-        position: 'absolute', left: '50%', transform: 'translateX(-50%)',
-      }}>
-        {[['Templates', '/templates'], ['Features', '/features'], ['Pricing', '/pricing']].map(([label, href]) => (
-          <Link key={href} href={href} style={{
-            padding: '7px 16px', borderRadius: 999, fontSize: '.82rem', fontWeight: 500,
-            color: '#c8d0e0', textDecoration: 'none', fontFamily: 'var(--font-b)',
-            transition: 'color .2s, background .2s',
-          }}
-            onMouseEnter={e => { (e.target as HTMLElement).style.color = '#ffffff'; (e.target as HTMLElement).style.background = 'rgba(255,255,255,.10)' }}
-            onMouseLeave={e => { (e.target as HTMLElement).style.color = '#c8d0e0'; (e.target as HTMLElement).style.background = 'transparent' }}
-          >{label}</Link>
-        ))}
-      </div>
-
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-        <Link href="/tool/new" className="md-flex btn-ghost" style={{ display: 'none', padding: '8px 18px', fontSize: '.78rem' }}>
-          New project
-        </Link>
-        <Link href="/tool" className="btn-primary" style={{ padding: '9px 20px', fontSize: '.8rem' }}>
-          Open Tool
-          <ArrowRight size={14} />
-        </Link>
-      </div>
-    </nav>
-  )
-}
-
 /* ─── HERO ───────────────────────────────────────────────────────── */
 function Hero() {
   return (
@@ -220,7 +165,7 @@ function Hero() {
       minHeight: '100vh', display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
       background: 'var(--bg)', position: 'relative', overflow: 'hidden',
-      padding: '120px 24px 80px',
+      padding: '72px 24px 80px',
     }}>
       {/* Ambient orbs */}
       <div style={{ position: 'absolute', top: '-10%', left: '-15%', width: '55%', height: '55%', background: 'radial-gradient(ellipse, rgba(99,102,241,.14) 0%, transparent 68%)', filter: 'blur(50px)', pointerEvents: 'none' }} />
@@ -613,7 +558,6 @@ export default function HomePage() {
     <div style={{ background: 'var(--bg)', minHeight: '100vh' }}>
       <GlobalStyles />
       <ScrollProgress />
-      <Navbar />
       <Hero />
       <Ticker />
       <HowItWorks />

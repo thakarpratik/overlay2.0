@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 import EditorShell from "@/components/editor/EditorShell";
 import { getTemplateById, templates } from "@/lib/templates";
 import { createProjectStateFromTemplate } from "@/lib/editor/actions";
 import { useEditorStore } from "@/lib/editor/store";
 import { getImage } from "@/lib/storage/images";
+import { loadStoredProject, patchStoredProject } from "@/lib/editor/persist";
 
-/* convert a Blob → a stable data: URL that can never be revoked */
 function blobToDataUrl(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -23,53 +24,94 @@ export default function EditorPage({ params }: { params: { projectId: string } }
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const templateIdParam = searchParams.get("templateId");
 
   const [ready, setReady] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const loadGen = useRef(0);
 
   const init = useEditorStore((s) => s.init);
 
-  /* ── load / reload project whenever templateId param changes ── */
   const load = useCallback(async () => {
+    const gen = ++loadGen.current;
     setReady(false);
+    setLoadError(null);
     try {
-      const raw = localStorage.getItem(`project:${projectId}`);
-      if (!raw) return;
-
-      const data = JSON.parse(raw) as { id: string; templateId: string; imageKeys: string[] };
-
-      /* prefer ?templateId from URL, fall back to stored value */
-      const templateId = searchParams.get("templateId") ?? data.templateId;
-      const template = getTemplateById(templateId);
-
-      /* persist the chosen template back so refresh keeps it */
-      if (templateId !== data.templateId) {
-        localStorage.setItem(`project:${projectId}`, JSON.stringify({ ...data, templateId }));
+      const data = loadStoredProject(projectId);
+      if (!data) {
+        if (gen === loadGen.current) setLoadError("Project not found");
+        return;
       }
 
-      /* read each image from IndexedDB and convert to a data: URL.
-         Data URLs are stable strings — they can't be revoked, so
-         html-to-image can re-fetch them during export without errors. */
+      const requestedId = templateIdParam ?? data.templateId;
+      const template = getTemplateById(requestedId);
+      if (!template) {
+        if (gen === loadGen.current) setLoadError("That template is no longer available.");
+        return;
+      }
+
+      const switchingTemplate = requestedId !== data.templateId;
+      if (switchingTemplate) {
+        patchStoredProject(projectId, { templateId: template.id, layers: undefined });
+      }
+
+      // Data URLs stay valid after blob URLs are revoked, which html-to-image needs during export.
       const imageSrcs: string[] = [];
       for (const key of data.imageKeys) {
-        const blob = await getImage(key);
-        if (blob) {
-          const dataUrl = await blobToDataUrl(blob);
-          imageSrcs.push(dataUrl);
+        try {
+          const blob = await getImage(key);
+          if (blob) imageSrcs.push(await blobToDataUrl(blob));
+        } catch {
+          // skip missing/unreadable blobs
         }
       }
 
-      const initial = createProjectStateFromTemplate(projectId, template, imageSrcs);
+      if (gen !== loadGen.current) return;
+
+      const initial = createProjectStateFromTemplate(
+        projectId,
+        template,
+        imageSrcs,
+        switchingTemplate
+          ? undefined
+          : { layers: data.layers, brand: data.brand, currentIndex: data.currentIndex }
+      );
       init(initial);
       setReady(true);
     } catch (err) {
       console.error("Failed to load project:", err);
+      if (gen === loadGen.current) setLoadError("Could not load project");
     }
-  }, [projectId, searchParams, init]);
+  }, [projectId, templateIdParam, init]);
 
   useEffect(() => { load(); }, [load]);
 
-  /* ── switch template: update URL param → triggers reload via searchParams dep ── */
+  useEffect(() => {
+    if (!ready) return;
+    let timer: number;
+    const persist = () => {
+      const s = useEditorStore.getState();
+      if (!s.projectId) return;
+      patchStoredProject(s.projectId, {
+        layers: s.layers,
+        brand: s.brand,
+        currentIndex: s.currentIndex,
+        templateId: s.templateId,
+      });
+    };
+    const unsub = useEditorStore.subscribe(() => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(persist, 300);
+    });
+    persist();
+    return () => {
+      unsub();
+      window.clearTimeout(timer);
+      persist();
+    };
+  }, [ready]);
+
   const switchTemplate = (templateId: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("templateId", templateId);
@@ -77,7 +119,26 @@ export default function EditorPage({ params }: { params: { projectId: string } }
     setDrawerOpen(false);
   };
 
-  /* ── loading screen ── */
+  if (loadError) {
+    return (
+      <div className="mx-auto max-w-7xl px-5 py-12">
+        <div className="rounded-2xl p-10 flex flex-col items-center justify-center text-center"
+          style={{ background: 'rgba(30,32,42,0.45)', border: '1px solid rgba(255,255,255,0.07)', backdropFilter: 'blur(12px)', minHeight: '360px' }}>
+          <h2 className="text-white font-semibold text-base" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{loadError}</h2>
+          <p className="mt-1.5 text-sm" style={{ color: '#6b7280' }}>Start a new project or go back to the tool.</p>
+          <div className="mt-6 flex gap-3">
+            <Link href="/tool/new" className="rounded-full px-4 py-2 text-sm font-semibold text-white" style={{ background: 'linear-gradient(135deg,#6366f1,#4f46e5)' }}>
+              New project
+            </Link>
+            <Link href="/tool" className="rounded-full px-4 py-2 text-sm" style={{ color: '#d1d5db', border: '1px solid rgba(255,255,255,0.12)' }}>
+              Back
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!ready) {
     return (
       <div className="mx-auto max-w-7xl px-5 py-12">
@@ -100,10 +161,8 @@ export default function EditorPage({ params }: { params: { projectId: string } }
     );
   }
 
-  /* ── live: editor + template-switch drawer ── */
   return (
     <div className="relative">
-      {/* ── "Change template" trigger button rendered above EditorShell ── */}
       <div className="mx-auto max-w-7xl px-5 pt-4">
         <button
           onClick={() => setDrawerOpen(true)}
@@ -118,20 +177,15 @@ export default function EditorPage({ params }: { params: { projectId: string } }
         </button>
       </div>
 
-      {/* ── EditorShell (your existing full editor) ── */}
       <EditorShell />
 
-      {/* ── template-switch drawer (slide in from right) ── */}
       {drawerOpen && (
         <div className="fixed inset-0 z-50 flex justify-end">
-          {/* backdrop */}
           <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(3px)' }} onClick={() => setDrawerOpen(false)} />
 
-          {/* panel */}
           <div className="relative w-full max-w-md h-full overflow-y-auto"
             style={{ background: '#1a1c24', borderLeft: '1px solid rgba(255,255,255,0.07)' }}>
 
-            {/* header */}
             <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-4"
               style={{ background: 'rgba(26,28,36,0.9)', backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
               <div>
@@ -145,7 +199,6 @@ export default function EditorPage({ params }: { params: { projectId: string } }
               </button>
             </div>
 
-            {/* template grid */}
             <div className="p-4 grid grid-cols-2 gap-3">
               {templates.map((t) => (
                 <button
@@ -164,7 +217,6 @@ export default function EditorPage({ params }: { params: { projectId: string } }
                     (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none';
                   }}
                 >
-                  {/* arrow */}
                   <div className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity">
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#818cf8" strokeWidth="2" strokeLinecap="round">
                       <path d="M2 6h8M7 3l3 3-3 3" />

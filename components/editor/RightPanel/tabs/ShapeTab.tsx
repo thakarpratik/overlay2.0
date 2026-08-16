@@ -1,6 +1,7 @@
 "use client";
 
 import { useEditorStore } from "@/lib/editor/store";
+import { parseClampedNumber } from "@/lib/utils/parseNumber";
 
 const fieldLabel = (text: string) => (
   <div style={{ fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.35)", letterSpacing: "0.07em", textTransform: "uppercase" as const, marginBottom: 6 }}>
@@ -90,7 +91,10 @@ export default function ShapeTab({ layerId }: { layerId: string }) {
               type="number"
               style={inputStyle}
               value={layer.radius ?? 0}
-              onChange={(e) => updateLayer(layerId, { radius: Number(e.target.value) })}
+              onChange={(e) => {
+                const n = parseClampedNumber(e.target.value, 0, 9999);
+                if (n !== null) updateLayer(layerId, { radius: n });
+              }}
             />
           </div>
           <div>
@@ -102,7 +106,10 @@ export default function ShapeTab({ layerId }: { layerId: string }) {
               max="1"
               style={inputStyle}
               value={layer.opacity ?? 1}
-              onChange={(e) => updateLayer(layerId, { opacity: Number(e.target.value) })}
+              onChange={(e) => {
+                const n = parseClampedNumber(e.target.value, 0, 1);
+                if (n !== null) updateLayer(layerId, { opacity: n });
+              }}
             />
           </div>
         </div>

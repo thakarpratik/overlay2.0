@@ -220,7 +220,6 @@ export default function CanvasStage() {
             )}
 
             {layers.map((l) => {
-              const isSelected = l.id === selectedLayerId;
               const commonStyle: React.CSSProperties = {
                 position: "absolute",
                 left: l.x,
@@ -229,8 +228,6 @@ export default function CanvasStage() {
                 height: l.h,
                 opacity: l.opacity ?? 1,
                 transform: `rotate(${l.rotation ?? 0}deg)`,
-                outline: isSelected ? "2px solid rgba(168,130,255,0.9)" : "none",
-                outlineOffset: 2,
                 cursor: "grab",
               };
 
@@ -276,18 +273,41 @@ export default function CanvasStage() {
               );
             })}
 
-            {selected && (
-              <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-                {handles.map((h) => (
-                  <div
-                    key={h.key}
-                    style={{ ...h.style, cursor: h.cursor, pointerEvents: "auto" }}
-                    onPointerDown={(e) => onPointerDownResize(e, h.key)}
-                  />
-                ))}
-              </div>
-            )}
           </div>
+          {selected && (
+            <div
+              style={{
+                position: "absolute",
+                left: 0,
+                top: 0,
+                width: canvas.width,
+                height: canvas.height,
+                transformOrigin: "top left",
+                transform: `scale(${scale})`,
+                pointerEvents: "none",
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  left: selected.x,
+                  top: selected.y,
+                  width: selected.w,
+                  height: selected.h,
+                  outline: "2px solid rgba(168,130,255,0.9)",
+                  outlineOffset: 2,
+                  transform: `rotate(${selected.rotation ?? 0}deg)`,
+                }}
+              />
+              {handles.map((h) => (
+                <div
+                  key={h.key}
+                  style={{ ...h.style, cursor: h.cursor, pointerEvents: "auto" }}
+                  onPointerDown={(e) => onPointerDownResize(e, h.key)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

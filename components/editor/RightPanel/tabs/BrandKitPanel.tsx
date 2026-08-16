@@ -55,7 +55,7 @@ export default function BrandKitPanel() {
           <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
         </svg>
         <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>
-          Set your brand font and colors, then apply to selected or all text layers at once.
+          Set font, text, accent, and overlay-plate fill. Apply to all updates text plus light overlay plates — decorative shapes stay as-is. Accent updates layers already using the accent color.
         </div>
       </div>
 

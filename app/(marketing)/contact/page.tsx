@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import PageShell from "@/components/marketing/PageShell"
 
@@ -13,39 +14,75 @@ const INPUT_STYLE = {
 }
 
 export default function Page() {
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [message, setMessage] = useState("")
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle")
+  const [error, setError] = useState("")
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setStatus("sending")
+    setError("")
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setStatus("error")
+        setError(data.error || "Could not send message.")
+        return
+      }
+      setStatus("sent")
+      setName("")
+      setEmail("")
+      setMessage("")
+    } catch {
+      setStatus("error")
+      setError("Could not send message.")
+    }
+  }
+
   return (
     <PageShell title="Contact" subtitle="Drop a note — we'll get back to you.">
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16, maxWidth: 860 }}>
-        {/* Form */}
-        <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '28px 24px' }}>
+        <form onSubmit={onSubmit} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '28px 24px' }}>
           <h2 style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif", fontSize: '1rem', fontWeight: 600, color: '#f8fafc', marginBottom: 20 }}>Send a message</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <input style={INPUT_STYLE} placeholder="Name"
+            <input style={INPUT_STYLE} placeholder="Name" value={name} onChange={e => setName(e.target.value)} required
               onFocus={e => (e.target as HTMLElement).style.borderColor = 'rgba(99,102,241,0.5)'}
               onBlur={e => (e.target as HTMLElement).style.borderColor = 'rgba(255,255,255,0.1)'}
             />
-            <input style={INPUT_STYLE} type="email" placeholder="Email"
+            <input style={INPUT_STYLE} type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required
               onFocus={e => (e.target as HTMLElement).style.borderColor = 'rgba(99,102,241,0.5)'}
               onBlur={e => (e.target as HTMLElement).style.borderColor = 'rgba(255,255,255,0.1)'}
             />
-            <textarea style={{ ...INPUT_STYLE, resize: 'vertical', minHeight: 120 }} rows={5} placeholder="Message"
+            <textarea style={{ ...INPUT_STYLE, resize: 'vertical', minHeight: 120 }} rows={5} placeholder="Message" value={message} onChange={e => setMessage(e.target.value)} required
               onFocus={e => (e.target as HTMLElement).style.borderColor = 'rgba(99,102,241,0.5)'}
               onBlur={e => (e.target as HTMLElement).style.borderColor = 'rgba(255,255,255,0.1)'}
             />
-            <button style={{
+            <button type="submit" disabled={status === "sending"} style={{
               background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
               color: '#fff', fontFamily: "'Space Grotesk', system-ui, sans-serif",
               fontWeight: 600, fontSize: '.875rem', padding: '11px',
-              borderRadius: 999, border: 'none', cursor: 'pointer',
+              borderRadius: 999, border: 'none', cursor: status === "sending" ? 'not-allowed' : 'pointer',
               boxShadow: '0 4px 20px rgba(99,102,241,.3)', transition: 'opacity .2s',
+              opacity: status === "sending" ? 0.65 : 1,
             }}>
-              Send message
+              {status === "sending" ? "Sending…" : "Send message"}
             </button>
-            <p style={{ fontSize: '.72rem', color: '#475569', fontFamily: "'DM Sans', system-ui, sans-serif" }}>Wire this to your backend when ready.</p>
+            {status === "sent" && (
+              <p style={{ fontSize: '.8rem', color: '#22c55e', fontFamily: "'DM Sans', system-ui, sans-serif" }}>Message sent. We’ll get back to you soon.</p>
+            )}
+            {error && (
+              <p style={{ fontSize: '.8rem', color: '#f87171', fontFamily: "'DM Sans', system-ui, sans-serif" }}>{error}</p>
+            )}
           </div>
-        </div>
+        </form>
 
-        {/* Links */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '28px 24px' }}>
             <h2 style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif", fontSize: '1rem', fontWeight: 600, color: '#f8fafc', marginBottom: 14 }}>Quick links</h2>
@@ -66,11 +103,6 @@ export default function Page() {
                 </Link>
               ))}
             </div>
-          </div>
-          <div style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 14, padding: '18px 20px' }}>
-            <p style={{ fontSize: '.8rem', color: '#818cf8', lineHeight: 1.6, fontFamily: "'DM Sans', system-ui, sans-serif" }}>
-              <strong style={{ color: '#a5b4fc' }}>Dev tip:</strong> If export fails, check the browser console for CORS/taint issues with external image URLs.
-            </p>
           </div>
         </div>
       </div>

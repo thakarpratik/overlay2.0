@@ -2,6 +2,7 @@
 
 import { FONT_OPTIONS } from "@/lib/fonts";
 import { useEditorStore } from "@/lib/editor/store";
+import { isHexColor, parseClampedNumber, parseFiniteNumber } from "@/lib/utils/parseNumber";
 
 const fieldLabel = (text: string) => (
   <div style={{ fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.35)", letterSpacing: "0.07em", textTransform: "uppercase", marginBottom: 6 }}>
@@ -115,7 +116,10 @@ export default function TextTab({ layerId }: { layerId: string }) {
               type="number"
               style={inputStyle}
               value={layer.fontSize}
-              onChange={(e) => updateLayer(layerId, { fontSize: Number(e.target.value) })}
+              onChange={(e) => {
+                const n = parseClampedNumber(e.target.value, 8, 400);
+                if (n !== null) updateLayer(layerId, { fontSize: n });
+              }}
             />
           </div>
           <div>
@@ -149,7 +153,10 @@ export default function TextTab({ layerId }: { layerId: string }) {
               step="0.05"
               style={inputStyle}
               value={layer.lineHeight}
-              onChange={(e) => updateLayer(layerId, { lineHeight: Number(e.target.value) })}
+              onChange={(e) => {
+                const n = parseClampedNumber(e.target.value, 0.5, 4);
+                if (n !== null) updateLayer(layerId, { lineHeight: n });
+              }}
             />
           </div>
           <div>
@@ -159,7 +166,10 @@ export default function TextTab({ layerId }: { layerId: string }) {
               step="0.5"
               style={inputStyle}
               value={layer.letterSpacing}
-              onChange={(e) => updateLayer(layerId, { letterSpacing: Number(e.target.value) })}
+              onChange={(e) => {
+                const n = parseClampedNumber(e.target.value, -20, 80);
+                if (n !== null) updateLayer(layerId, { letterSpacing: n });
+              }}
             />
           </div>
         </div>
@@ -174,7 +184,7 @@ export default function TextTab({ layerId }: { layerId: string }) {
             <input
               type="color"
               style={{ position: "absolute", opacity: 0, width: 0, height: 0 }}
-              value={layer.color}
+              value={isHexColor(layer.color) ? layer.color : "#000000"}
               onChange={(e) => updateLayer(layerId, { color: e.target.value })}
             />
             <div style={{
@@ -270,7 +280,11 @@ export default function TextTab({ layerId }: { layerId: string }) {
                 type="number"
                 style={inputStyle}
                 value={layer.stroke?.width ?? 6}
-                onChange={(e) => updateLayer(layerId, { stroke: { color: layer.stroke?.color ?? "#ffffff", width: Number(e.target.value) } })}
+                onChange={(e) => {
+                  const n = parseFiniteNumber(e.target.value);
+                  if (n === null) return;
+                  updateLayer(layerId, { stroke: { color: layer.stroke?.color ?? "#ffffff", width: n } });
+                }}
               />
             </div>
           </div>

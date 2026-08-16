@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { isValidEmail } from "@/lib/utils/email";
 
 export default function EmailGate() {
   const router = useRouter();
@@ -12,7 +13,7 @@ export default function EmailGate() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !email.includes("@")) {
+    if (!isValidEmail(email)) {
       setError("Please enter a valid email address");
       return;
     }
@@ -37,8 +38,7 @@ export default function EmailGate() {
       // Store email in localStorage
       localStorage.setItem("user_email", email);
       localStorage.setItem("email_collected_at", new Date().toISOString());
-      
-      // Redirect to upload/new project page
+      window.dispatchEvent(new Event("overlay-email-ready"));
       router.push("/tool/new");
     } catch (err) {
       setError("Something went wrong. Please try again.");
@@ -121,7 +121,7 @@ export default function EmailGate() {
 
         {/* Trust row */}
         <div style={{ marginTop: 28, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, textAlign: 'center' }}>
-          {[['No Tracking', '#22c55e'], ['Instant Export', '#818cf8'], ['Free Forever', '#f59e0b']].map(([label, color]) => (
+          {[['Images stay local', '#22c55e'], ['Instant Export', '#818cf8'], ['Free Forever', '#f59e0b']].map(([label, color]) => (
             <div key={label}>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" style={{ margin: '0 auto 6px', display: 'block' }}><path d="M3 8l3.5 3.5L13 4"/></svg>
               <p style={{ fontSize: '.72rem', color: '#64748b', fontFamily: "'DM Sans', system-ui, sans-serif", fontWeight: 500 }}>{label}</p>
