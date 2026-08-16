@@ -4,20 +4,21 @@ import { useState } from "react";
 import { templates } from "@/lib/templates";
 import { useRouter } from "next/navigation";
 import UploadDropzone from "@/components/editor/UploadDropzone";
-import { saveImage } from "@/lib/storage/images";
+import { deleteImages, saveImage } from "@/lib/storage/images";
 
 export default function NewProjectPage() {
   const router = useRouter();
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  /* save images + project, then jump straight into editor with that template */
   const goToEditor = async (templateId: string) => {
     if (files.length === 0 || loading) return;
     setLoading(true);
+    setError("");
+    const imageKeys: string[] = [];
     try {
       const id = crypto.randomUUID();
-      const imageKeys: string[] = [];
       for (let i = 0; i < files.length; i++) {
         const key = `${id}:img:${i}`;
         await saveImage(key, files[i]);
@@ -28,6 +29,13 @@ export default function NewProjectPage() {
         JSON.stringify({ id, templateId, imageKeys, createdAt: Date.now() })
       );
       router.push(`/tool/editor/${id}`);
+    } catch (err) {
+      console.error("Failed to save project images:", err);
+      try { await deleteImages(imageKeys); } catch { /* ignore cleanup errors */ }
+      const quota = err instanceof DOMException && err.name === "QuotaExceededError";
+      setError(quota
+        ? "Not enough browser storage to save these images. Remove some files and try again."
+        : "Could not save images in this browser. Check storage permissions and try again.");
     } finally {
       setLoading(false);
     }
@@ -128,6 +136,10 @@ export default function NewProjectPage() {
               );
             })}
           </div>
+
+          {error && (
+            <p className="mt-4 text-xs text-center" style={{ color: '#f87171' }}>{error}</p>
+          )}
 
           {loading && (
             <div className="mt-5 flex items-center justify-center gap-2">

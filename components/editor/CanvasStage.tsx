@@ -170,7 +170,6 @@ export default function CanvasStage() {
             )}
 
             {layers.map((l) => {
-              const isSelected = l.id === selectedLayerId;
               const commonStyle: React.CSSProperties = {
                 position: "absolute",
                 left: l.x,
@@ -179,8 +178,6 @@ export default function CanvasStage() {
                 height: l.h,
                 opacity: l.opacity ?? 1,
                 transform: `rotate(${l.rotation ?? 0}deg)`,
-                outline: isSelected ? "2px solid rgba(0,0,0,.55)" : "none",
-                outlineOffset: 2,
                 cursor: "grab"
               };
 
@@ -226,14 +223,29 @@ export default function CanvasStage() {
               );
             })}
 
-            {selected && (
-              <div className="absolute inset-0 pointer-events-none">
-                {handles.map((h) => (
-                  <div key={h.key} className="pointer-events-auto" style={{ ...h.style, cursor: h.cursor }} onPointerDown={(e) => onPointerDownResize(e, h.key)} />
-                ))}
-              </div>
-            )}
           </div>
+          {selected && (
+            <div
+              className="absolute left-0 top-0 origin-top-left pointer-events-none"
+              style={{ width: canvas.width, height: canvas.height, transform: `scale(${scale})` }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  left: selected.x,
+                  top: selected.y,
+                  width: selected.w,
+                  height: selected.h,
+                  outline: "2px solid rgba(0,0,0,.55)",
+                  outlineOffset: 2,
+                  transform: `rotate(${selected.rotation ?? 0}deg)`,
+                }}
+              />
+              {handles.map((h) => (
+                <div key={h.key} className="pointer-events-auto" style={{ ...h.style, cursor: h.cursor }} onPointerDown={(e) => onPointerDownResize(e, h.key)} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

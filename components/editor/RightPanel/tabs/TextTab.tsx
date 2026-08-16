@@ -2,6 +2,7 @@
 
 import { FONT_OPTIONS } from "@/lib/fonts";
 import { useEditorStore } from "@/lib/editor/store";
+import { isHexColor, parseClampedNumber, parseFiniteNumber } from "@/lib/utils/parseNumber";
 
 export default function TextTab({ layerId }: { layerId: string }) {
   const layer = useEditorStore((s) => s.layers.find((l) => l.id === layerId && l.type === "text") as any);
@@ -44,7 +45,10 @@ export default function TextTab({ layerId }: { layerId: string }) {
             type="number"
             className="mt-1 w-full rounded-xl border px-3 py-2 text-sm"
             value={layer.fontSize}
-            onChange={(e) => updateLayer(layerId, { fontSize: Number(e.target.value) })}
+            onChange={(e) => {
+              const n = parseClampedNumber(e.target.value, 8, 400);
+              if (n !== null) updateLayer(layerId, { fontSize: n });
+            }}
           />
         </label>
 
@@ -55,7 +59,10 @@ export default function TextTab({ layerId }: { layerId: string }) {
             step="50"
             className="mt-1 w-full rounded-xl border px-3 py-2 text-sm"
             value={layer.fontWeight}
-            onChange={(e) => updateLayer(layerId, { fontWeight: Number(e.target.value) })}
+            onChange={(e) => {
+              const n = parseClampedNumber(e.target.value, 100, 900);
+              if (n !== null) updateLayer(layerId, { fontWeight: n });
+            }}
           />
         </label>
       </div>
@@ -68,7 +75,10 @@ export default function TextTab({ layerId }: { layerId: string }) {
             step="0.05"
             className="mt-1 w-full rounded-xl border px-3 py-2 text-sm"
             value={layer.lineHeight}
-            onChange={(e) => updateLayer(layerId, { lineHeight: Number(e.target.value) })}
+            onChange={(e) => {
+              const n = parseClampedNumber(e.target.value, 0.5, 4);
+              if (n !== null) updateLayer(layerId, { lineHeight: n });
+            }}
           />
         </label>
 
@@ -79,7 +89,10 @@ export default function TextTab({ layerId }: { layerId: string }) {
             step="0.5"
             className="mt-1 w-full rounded-xl border px-3 py-2 text-sm"
             value={layer.letterSpacing}
-            onChange={(e) => updateLayer(layerId, { letterSpacing: Number(e.target.value) })}
+            onChange={(e) => {
+              const n = parseClampedNumber(e.target.value, -20, 80);
+              if (n !== null) updateLayer(layerId, { letterSpacing: n });
+            }}
           />
         </label>
       </div>
@@ -90,7 +103,7 @@ export default function TextTab({ layerId }: { layerId: string }) {
           <input
             type="color"
             className="mt-1 h-10 w-full rounded-xl border px-2"
-            value={layer.color}
+            value={isHexColor(layer.color) ? layer.color : "#000000"}
             onChange={(e) => updateLayer(layerId, { color: e.target.value })}
           />
         </label>
@@ -153,7 +166,11 @@ export default function TextTab({ layerId }: { layerId: string }) {
                 type="number"
                 className="mt-1 w-full rounded-xl border px-3 py-2 text-sm"
                 value={layer.stroke?.width ?? 6}
-                onChange={(e) => updateLayer(layerId, { stroke: { color: layer.stroke?.color ?? "#ffffff", width: Number(e.target.value) } })}
+                onChange={(e) => {
+                  const n = parseFiniteNumber(e.target.value);
+                  if (n === null) return;
+                  updateLayer(layerId, { stroke: { color: layer.stroke?.color ?? "#ffffff", width: n } });
+                }}
               />
             </label>
           </div>

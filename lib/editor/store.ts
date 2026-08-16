@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import { applyBrandToLayer } from "./brand";
 import { BrandKit, EditorState, OverlayLayer } from "./types";
 
 type Actions = {
@@ -29,33 +30,27 @@ export const useEditorStore = create<EditorState & Actions>((set, get) => ({
   init: (state) => set(() => ({ ...state })),
   selectLayer: (id) => set(() => ({ selectedLayerId: id })),
   updateLayer: (id, patch) =>
-    set((s) => ({ layers: s.layers.map((l) => (l.id === id ? ({ ...l, ...patch } as any) : l)) })),
-  setCurrentIndex: (idx) => set((s) => ({ currentIndex: Math.max(0, Math.min(idx, s.images.length - 1)) })),
-  setBrand: (patch) => set((s) => ({ brand: { ...s.brand, ...patch } })),
-  applyBrandToAll: () => {
-    const b = get().brand;
-    set((s) => ({
-      layers: s.layers.map((l) => {
-        if (l.type === "text") {
-          const tl: any = l;
-          return { ...tl, fontFamily: b.fontFamily, color: b.primaryText };
-        }
-        // for shapes: only update those that look like "overlay backgrounds" (semi-transparent whites) by default
-        const sl: any = l;
-        return { ...sl, fill: b.shapeFill };
-      })
-    }));
-  },
-  applyBrandToSelected: () => {
-    const b = get().brand;
-    const id = get().selectedLayerId;
-    if (!id) return;
     set((s) => ({
       layers: s.layers.map((l) => {
         if (l.id !== id) return l;
-        if (l.type === "text") return ({ ...(l as any), fontFamily: b.fontFamily, color: b.primaryText } as any);
-        return ({ ...(l as any), fill: b.shapeFill } as any);
-      })
+        if (l.type === "text") return { ...l, ...patch, type: "text" };
+        return { ...l, ...patch, type: "shape" };
+      }),
+    })),
+  setCurrentIndex: (idx) => set((s) => ({ currentIndex: Math.max(0, Math.min(idx, Math.max(s.images.length - 1, 0))) })),
+  setBrand: (patch) => set((s) => ({ brand: { ...s.brand, ...patch } })),
+  applyBrandToAll: () => {
+    const previous = get().brand;
+    set((s) => ({
+      layers: s.layers.map((l) => applyBrandToLayer(l, previous, previous, "all")),
+    }));
+  },
+  applyBrandToSelected: () => {
+    const previous = get().brand;
+    const id = get().selectedLayerId;
+    if (!id) return;
+    set((s) => ({
+      layers: s.layers.map((l) => (l.id === id ? applyBrandToLayer(l, previous, previous, "selected") : l)),
     }));
   }
 }));

@@ -12,15 +12,23 @@ export default function PageShell({
   cta?: { label: string; href: string };
 }) {
   return (
-    <div className="relative">
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-white via-white to-neutral-50" />
-      <div className="mx-auto max-w-6xl px-4 py-12">
+    <div style={{ background: "#0c0e14", minHeight: "calc(100vh - 72px)", color: "#fff" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "48px 24px 80px" }}>
         <div className="flex flex-col gap-3">
-          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">{title}</h1>
-          {subtitle && <p className="text-neutral-600 max-w-2xl">{subtitle}</p>}
+          <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: 700, letterSpacing: "-0.03em" }}>{title}</h1>
+          {subtitle && <p style={{ color: "#9ca3af", maxWidth: 640, lineHeight: 1.7 }}>{subtitle}</p>}
           {cta && (
             <div className="pt-2">
-              <Link href={cta.href} className="inline-flex rounded-xl bg-black text-white px-5 py-3 hover:opacity-90 transition">
+              <Link href={cta.href} style={{
+                display: "inline-flex",
+                borderRadius: 12,
+                background: "linear-gradient(135deg, #6366f1, #4f46e5)",
+                color: "#fff",
+                padding: "12px 20px",
+                textDecoration: "none",
+                fontWeight: 600,
+                fontSize: "0.875rem",
+              }}>
                 {cta.label}
               </Link>
             </div>

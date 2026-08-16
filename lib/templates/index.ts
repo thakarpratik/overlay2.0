@@ -42,6 +42,6 @@ export const templates: OverlayTemplate[] = [
 
 export const TEMPLATE_CATEGORIES = Array.from(new Set(templates.map(t => t.category)));
 
-export function getTemplateById(id: string): OverlayTemplate {
-  return templates.find((t) => t.id === id) ?? templates[0];
+export function getTemplateById(id: string): OverlayTemplate | undefined {
+  return templates.find((t) => t.id === id);
 }

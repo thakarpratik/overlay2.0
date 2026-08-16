@@ -13,7 +13,7 @@ export default function BrandKitPanel() {
   return (
     <div className="space-y-3">
       <div className="text-sm font-medium">Brand Kit</div>
-      <div className="text-xs text-neutral-600">Set your default font + colors, then apply to selected or all layers.</div>
+      <div className="text-xs text-neutral-600">Set font, text, accent, and overlay-plate fill. Apply to all updates text plus light overlay plates — decorative shapes stay as-is.</div>
 
       <label className="text-xs text-neutral-600">
         Brand font

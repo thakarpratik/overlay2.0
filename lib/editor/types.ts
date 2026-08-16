@@ -1,4 +1,6 @@
 export type LayerType = "text" | "shape";
+export type BrandRole = "plate" | "accent";
+export type CanvasSize = { width: number; height: number };
 
 export type BaseLayer = {
   id: string;
@@ -6,6 +8,7 @@ export type BaseLayer = {
   x: number; y: number; w: number; h: number;
   rotation?: number;
   opacity?: number;
+  brandRole?: BrandRole;
 };
 
 export type TextLayer = BaseLayer & {
@@ -45,7 +48,7 @@ export type BrandKit = {
 export type EditorState = {
   projectId: string;
   templateId: string;
-  canvas: { width: number; height: number };
+  canvas: CanvasSize;
   images: ProjectImage[];
   currentIndex: number;
   layers: OverlayLayer[];

@@ -114,80 +114,13 @@ function useReveal(ref: React.RefObject<HTMLDivElement>, delay = 0) {
 }
 
 /* ─────────────────────────────────────────────
-   STICKY NAV
-   ───────────────────────────────────────────── */
-function StickyNav() {
-  const [scrolled, setScrolled] = useState(false)
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  return (
-    <nav className={`sticky-nav ${scrolled ? 'scrolled' : ''}`}>
-      {/* Logo */}
-      <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-        <img 
-          src="/layerNow_Logo.svg" 
-          alt="OverlayTool" 
-          style={{ height: 44, width: 'auto' }}
-        />
-      </Link>
-
-      {/* Center nav links - hidden on mobile */}
-      <div style={{ display: 'none', gap: 4, position: 'absolute', left: '50%', transform: 'translateX(-50%)' }} className="md-nav-links">
-        {[
-          { label: 'Templates', href: '/templates' },
-          { label: 'Features', href: '/features' },
-          { label: 'Pricing', href: '/pricing' },
-        ].map(link => (
-          <Link key={link.href} href={link.href} style={{
-            padding: '6px 14px', borderRadius: 8, fontSize: '0.82rem', fontWeight: 500,
-            color: 'var(--clr-sub)', textDecoration: 'none', transition: 'background 0.2s, color 0.2s'
-          }}
-            onMouseEnter={e => { (e.target as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; (e.target as HTMLElement).style.color = 'var(--clr-text)' }}
-            onMouseLeave={e => { (e.target as HTMLElement).style.background = 'transparent'; (e.target as HTMLElement).style.color = 'var(--clr-sub)' }}
-          >
-            {link.label}
-          </Link>
-        ))}
-      </div>
-
-      {/* Right CTAs */}
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-        <Link href="/tool/new" className="new-project-btn" style={{
-          display: 'none',
-          padding: '7px 16px', borderRadius: 10, fontSize: '0.8rem', fontWeight: 500,
-          color: 'var(--clr-text)', textDecoration: 'none', border: '1px solid var(--clr-border)',
-          background: 'rgba(255,255,255,0.03)', transition: 'background 0.2s'
-        }}
-          onMouseEnter={e => (e.target as HTMLElement).style.background = 'rgba(255,255,255,0.06)'}
-          onMouseLeave={e => (e.target as HTMLElement).style.background = 'rgba(255,255,255,0.03)'}
-        >
-          New project
-        </Link>
-        <Link href="/tool" className="cta-btn" style={{
-          display: 'inline-flex',
-          alignItems: 'center', gap: '6px', background: 'linear-gradient(135deg, var(--clr-primary), #4f46e5)',
-          color: '#fff', fontSize: '0.8rem', fontWeight: 600, padding: '8px 18px', borderRadius: 10,
-          textDecoration: 'none', boxShadow: '0 4px 20px rgba(99,102,241,0.3)'
-        }}>
-          Open Tool
-        </Link>
-      </div>
-    </nav>
-  )
-}
-
-/* ─────────────────────────────────────────────
    HERO SECTION
    ───────────────────────────────────────────── */
 function Hero() {
   return (
     <section style={{
       minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
-      background: 'var(--clr-bg)', position: 'relative', overflow: 'hidden', paddingTop: 100, paddingBottom: 80
+      background: 'var(--clr-bg)', position: 'relative', overflow: 'hidden', paddingTop: 48, paddingBottom: 80
     }}>
       {/* Ambient gradient blobs */}
       <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '60%', height: '60%', background: 'radial-gradient(ellipse, rgba(99,102,241,0.12) 0%, transparent 70%)', pointerEvents: 'none', filter: 'blur(40px)' }} />
@@ -554,7 +487,6 @@ export default function HomePage() {
   return (
     <div style={{ background: 'var(--clr-bg)', minHeight: '100vh' }}>
       <GlobalStyles />
-      <StickyNav />
       <Hero />
       <Ticker />
       <Showcase />

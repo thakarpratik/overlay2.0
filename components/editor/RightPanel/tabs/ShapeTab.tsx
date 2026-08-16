@@ -1,6 +1,7 @@
 "use client";
 
 import { useEditorStore } from "@/lib/editor/store";
+import { parseClampedNumber } from "@/lib/utils/parseNumber";
 
 export default function ShapeTab({ layerId }: { layerId: string }) {
   const layer = useEditorStore((s) => s.layers.find((l) => l.id === layerId && l.type === "shape") as any);
@@ -28,7 +29,10 @@ export default function ShapeTab({ layerId }: { layerId: string }) {
             type="number"
             className="mt-1 w-full rounded-xl border px-3 py-2 text-sm"
             value={layer.radius}
-            onChange={(e) => updateLayer(layerId, { radius: Number(e.target.value) })}
+            onChange={(e) => {
+              const n = parseClampedNumber(e.target.value, 0, 9999);
+              if (n !== null) updateLayer(layerId, { radius: n });
+            }}
           />
         </label>
 
@@ -41,7 +45,10 @@ export default function ShapeTab({ layerId }: { layerId: string }) {
             max="1"
             className="mt-1 w-full rounded-xl border px-3 py-2 text-sm"
             value={layer.opacity ?? 1}
-            onChange={(e) => updateLayer(layerId, { opacity: Number(e.target.value) })}
+            onChange={(e) => {
+              const n = parseClampedNumber(e.target.value, 0, 1);
+              if (n !== null) updateLayer(layerId, { opacity: n });
+            }}
           />
         </label>
       </div>
